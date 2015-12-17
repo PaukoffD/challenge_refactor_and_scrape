@@ -1,3 +1,11 @@
+GIT
+  remote: git://github.com/dima4p/factory_girl_rails.git
+  revision: 19a36d2e2d344bbea32cf53d7946dc374bf41a3d
+  specs:
+    factory_girl_rails (4.5.0)
+      factory_girl (~> 4.5.0)
+      railties (>= 3.0.0)
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -62,9 +70,6 @@ GEM
     factory_girl (4.5.0)
       activesupport (>= 3.0.0)
     factory_girl_fixtures_template (1.0.4)
-    factory_girl_rails (4.5.0)
-      factory_girl (~> 4.5.0)
-      railties (>= 3.0.0)
     ffi (1.9.10)
     formatador (0.2.5)
     globalid (0.3.6)
@@ -263,7 +268,7 @@ DEPENDENCIES
   byebug
   coffee-rails (~> 4.1.0)
   factory_girl_fixtures_template
-  factory_girl_rails
+  factory_girl_rails!
   guard-rspec
   haml-rails
   i18n_scaffold_generator
