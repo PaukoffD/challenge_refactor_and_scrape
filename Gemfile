@@ -90,7 +90,7 @@ end
 
 group :test do
   gem 'rspec-activemodel-mocks'
-  gem 'shoulda-matchers', require: false
+  gem 'shoulda-matchers', '2.8.0', require: false
 
   gem 'factory_girl_rails', github: 'dima4p/factory_girl_rails'
 end
