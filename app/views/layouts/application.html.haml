@@ -1,0 +1,24 @@
+!!! 5
+%html
+
+  %head
+    %title
+      - title = yield(:title)
+      = title.present? ? title : "Untitled"
+      | SimplexMobility
+    %meta{"http-equiv"=>"Content-Type", content: "text/html; charset=utf-8"}/
+    = favicon_link_tag @favicon || 'application.ico'
+    = stylesheet_link_tag 'application', media: 'all', 'data-turbolinks-track' => true
+    = javascript_include_tag 'application', 'data-turbolinks-track' => true
+    = csrf_meta_tags
+
+  %body(class: [controller.controller_name, controller.action_name]}
+    #container
+      #content
+        - flash.each do |name, msg|
+          = content_tag :div, msg.html_safe, id: "flash_#{name}"
+        - if respond_to?(:show_title?) and show_title?
+          %h1
+            = yield(:title)
+        #view
+          = yield
