@@ -1,0 +1,30 @@
+---
+en:
+  activerecord:
+    models:
+      customer: "Customer"
+    attributes:
+      customer: 
+        name: "Name"
+  helpers:
+    submit:
+      customer:
+        create: "Create customer"
+        update: "Update customer"
+  customers:
+    edit:
+      title: "Editing of the customer"
+    form:
+      customer: "Customer"
+    index:
+      confirm: "Are you sure you want to delete the customer?"
+      empty: "No customers found"
+      new_customer: "Add a new customer"
+      title: "Listing of customers"
+    new:
+      title: "Adding a new customer"
+    show:
+      title: "Customer details"
+    was_created: "Customer was successfully added"
+    was_deleted: "Customer was successfully deleted"
+    was_updated: "Customer was successfully updated"

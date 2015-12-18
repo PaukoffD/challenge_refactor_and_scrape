@@ -1,0 +1,6 @@
+- title t('.title')
+
+%p.nav
+  = link_to t('back'), customers_path, class: 'index'
+  = link_to t('show'), @customer, class: 'show'
+= render 'form'

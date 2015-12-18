@@ -1,0 +1,9 @@
+- title t('.title')
+
+%p.nav
+  = link_to t('back'), customers_path, class: 'index'
+  = link_to t('edit'), edit_customer_path(@customer), class: 'edit'
+
+%dl
+  %dt= Customer.human_attribute_name :name
+  %dd= @customer.name

@@ -16,3 +16,7 @@ end
 %w[Telus].each do |name|
   CarrierBase.find_or_create_by name: name
 end
+
+['First Customer'].each do |name|
+  Customer.find_or_create_by name: name
+end
