@@ -14,6 +14,7 @@
 class AccountingType < ActiveRecord::Base
 
   belongs_to :customer
+  has_many :accounting_categories
 
   validates :name, presence: true, uniqueness: {scope: :customer_id}
 

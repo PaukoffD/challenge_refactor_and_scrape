@@ -11,10 +11,19 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151218170642) do
+ActiveRecord::Schema.define(version: 20151218173824) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "accounting_categories", force: :cascade do |t|
+    t.integer  "accounting_type_id"
+    t.string   "name"
+    t.datetime "created_at",         null: false
+    t.datetime "updated_at",         null: false
+  end
+
+  add_index "accounting_categories", ["accounting_type_id"], name: "index_accounting_categories_on_accounting_type_id", using: :btree
 
   create_table "accounting_types", force: :cascade do |t|
     t.integer  "customer_id"
@@ -55,5 +64,6 @@ ActiveRecord::Schema.define(version: 20151218170642) do
     t.datetime "updated_at", null: false
   end
 
+  add_foreign_key "accounting_categories", "accounting_types"
   add_foreign_key "accounting_types", "customers"
 end

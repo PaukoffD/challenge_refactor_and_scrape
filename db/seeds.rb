@@ -17,9 +17,26 @@ end
   CarrierBase.find_or_create_by name: name
 end
 
-['First Customer'].each do |name|
+CUSTOMERS = {
+  'First Customer' => {
+    'Reports To' => [
+                     "10010 Corporate Development",
+                     "10083 INT - International",
+                     "26837 Carson Wainwright"
+                    ],
+    'Cost Center' => [
+                      "10010.8350",
+                      "26837.7037.18"
+                     ],
+  }
+}
+
+CUSTOMERS.each do |name, accounting_types|
   customer = Customer.find_or_create_by name: name
-  ['Reports To', 'Cost Center'].each do |name|
-    customer.accounting_types.find_or_create_by name: name
+  accounting_types.each do |name, accounting_categories|
+    type = customer.accounting_types.find_or_create_by name: name
+    accounting_categories.each do |name|
+      type.accounting_categories.find_or_create_by name: name
+    end
   end
 end

@@ -1,0 +1,10 @@
+---
+en:
+  activerecord:
+    models:
+      accounting_category: "Accounting category"
+    attributes:
+      accounting_category:
+        accounting_type: 'Accounting Type'
+        accounting_type_id: 'Accounting Type'
+        name: "Name"
