@@ -12,3 +12,7 @@ end
 %w[01074132].each do |name|
   BusinessAccount.find_or_create_by name: name
 end
+
+%w[Telus].each do |name|
+  CarrierBase.find_or_create_by name: name
+end

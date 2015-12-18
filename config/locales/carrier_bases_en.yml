@@ -1,0 +1,8 @@
+---
+en:
+  activerecord:
+    models:
+      carrier_base: "Carrier base"
+    attributes:
+      carrier_base:
+        name: "Name"
