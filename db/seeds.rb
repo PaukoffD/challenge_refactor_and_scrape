@@ -8,3 +8,7 @@ end
 ['iPad Air 32GB', '6', '5C', 'LG A341'].each do |name|
   DeviceModel.find_or_create_by name: name
 end
+
+%w[01074132].each do |name|
+  BusinessAccount.find_or_create_by name: name
+end

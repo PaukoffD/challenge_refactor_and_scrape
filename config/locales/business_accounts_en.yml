@@ -1,0 +1,8 @@
+---
+en:
+  activerecord:
+    models:
+      business_account: "Business account"
+    attributes:
+      business_account:
+        name: "Name"
