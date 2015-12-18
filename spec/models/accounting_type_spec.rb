@@ -1,3 +1,14 @@
+# == Schema Information
+#
+# Table name: accounting_types
+#
+#  id          :integer          not null, primary key
+#  customer_id :integer
+#  name        :string
+#  created_at  :datetime         not null
+#  updated_at  :datetime         not null
+#
+
 require 'rails_helper'
 
 describe AccountingType, type: :model do
