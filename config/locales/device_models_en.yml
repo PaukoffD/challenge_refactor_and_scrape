@@ -1,0 +1,8 @@
+---
+en:
+  activerecord:
+    models:
+      device_model: "Device model"
+    attributes:
+      device_model:
+        name: "Name"
