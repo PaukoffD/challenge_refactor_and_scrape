@@ -18,5 +18,8 @@ end
 end
 
 ['First Customer'].each do |name|
-  Customer.find_or_create_by name: name
+  customer = Customer.find_or_create_by name: name
+  ['Reports To', 'Cost Center'].each do |name|
+    customer.accounting_types.find_or_create_by name: name
+  end
 end

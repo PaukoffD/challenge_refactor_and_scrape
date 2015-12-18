@@ -1,0 +1,10 @@
+---
+en:
+  activerecord:
+    models:
+      accounting_type: "Accounting Type"
+    attributes:
+      accounting_type:
+        customer: Customer
+        customer_id: Customer
+        name: "Name"
