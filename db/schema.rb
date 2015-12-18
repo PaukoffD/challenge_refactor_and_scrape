@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151218173824) do
+ActiveRecord::Schema.define(version: 20151218180759) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -36,9 +36,12 @@ ActiveRecord::Schema.define(version: 20151218173824) do
 
   create_table "business_accounts", force: :cascade do |t|
     t.string   "name"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at",  null: false
+    t.datetime "updated_at",  null: false
+    t.integer  "customer_id"
   end
+
+  add_index "business_accounts", ["customer_id"], name: "index_business_accounts_on_customer_id", using: :btree
 
   create_table "carrier_bases", force: :cascade do |t|
     t.string   "name"
@@ -66,4 +69,5 @@ ActiveRecord::Schema.define(version: 20151218173824) do
 
   add_foreign_key "accounting_categories", "accounting_types"
   add_foreign_key "accounting_types", "customers"
+  add_foreign_key "business_accounts", "customers"
 end

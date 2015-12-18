@@ -2,10 +2,11 @@
 #
 # Table name: business_accounts
 #
-#  id         :integer          not null, primary key
-#  name       :string
-#  created_at :datetime         not null
-#  updated_at :datetime         not null
+#  id          :integer          not null, primary key
+#  name        :string
+#  created_at  :datetime         not null
+#  updated_at  :datetime         not null
+#  customer_id :integer
 #
 
 require 'rails_helper'
@@ -18,6 +19,7 @@ describe BusinessAccount, type: :model do
 
   it {should validate_presence_of :name}
   it {should validate_uniqueness_of :name}
+  it {should belong_to :customer}
 
   describe :class do
     describe :scope do

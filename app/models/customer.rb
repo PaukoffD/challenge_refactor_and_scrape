@@ -15,6 +15,7 @@ class Customer < ActiveRecord::Base
   validates :name, presence: true, uniqueness: true
 
   has_many :accounting_types
+  has_many :business_accounts
 
   scope :ordered, -> { order(:name) }
 
