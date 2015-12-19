@@ -16,6 +16,7 @@ class Customer < ActiveRecord::Base
 
   has_many :accounting_types
   has_many :business_accounts
+  has_many :devices
 
   scope :ordered, -> { order(:name) }
 

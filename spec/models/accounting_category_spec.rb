@@ -20,6 +20,7 @@ describe AccountingCategory, type: :model do
   it {should validate_presence_of :name}
   it {should validate_uniqueness_of(:name).scoped_to(:accounting_type_id)}
   it {should belong_to :accounting_type}
+  it {should have_and_belong_to_many :devices}
 
   describe :class do
     describe :scope do

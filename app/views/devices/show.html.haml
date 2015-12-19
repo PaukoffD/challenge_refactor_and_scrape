@@ -1,0 +1,65 @@
+- title t('.title')
+
+%p.nav
+  = link_to t('back'), devices_path, class: 'index'
+  = link_to t('edit'), edit_device_path(@device), class: 'edit'
+
+%dl
+  %dt= Device.human_attribute_name :number
+  %dd= @device.number
+  %dt= Device.human_attribute_name :customer
+  %dd= @device.customer.try :name
+  %dt= Device.human_attribute_name :device_make
+  %dd= @device.device_make.try :name
+  %dt= Device.human_attribute_name :device_model
+  %dd= @device.device_model.try :name
+  %dt= Device.human_attribute_name :status
+  %dd= @device.status
+  %dt= Device.human_attribute_name :imei_number
+  %dd= @device.imei_number
+  %dt= Device.human_attribute_name :sim_number
+  %dd= @device.sim_number
+  %dt= Device.human_attribute_name :model
+  %dd= @device.model
+  %dt= Device.human_attribute_name :carrier_base
+  %dd= @device.carrier_base.try :name
+  %dt= Device.human_attribute_name :business_account
+  %dd= @device.business_account.try :name
+  %dt= Device.human_attribute_name :contract_expiry_date
+  %dd= @device.contract_expiry_date
+  %dt= Device.human_attribute_name :username
+  %dd= @device.username
+  %dt= Device.human_attribute_name :location
+  %dd= @device.location
+  %dt= Device.human_attribute_name :email
+  %dd= @device.email
+  %dt= Device.human_attribute_name :employee_number
+  %dd= @device.employee_number
+  %dt= Device.human_attribute_name :contact_id
+  %dd= @device.contact_id
+  %dt= Device.human_attribute_name :inactive
+  %dd= @device.inactive
+  %dt= Device.human_attribute_name :in_suspension
+  %dd= @device.in_suspension
+  %dt= Device.human_attribute_name :is_roaming
+  %dd= @device.is_roaming
+  %dt= Device.human_attribute_name :additional_data_old
+  %dd= @device.additional_data_old
+  %dt= Device.human_attribute_name :added_features
+  %dd= @device.added_features
+  %dt= Device.human_attribute_name :current_rate_plan
+  %dd= @device.current_rate_plan
+  %dt= Device.human_attribute_name :data_usage_status
+  %dd= @device.data_usage_status
+  %dt= Device.human_attribute_name :transfer_to_personal_status
+  %dd= @device.transfer_to_personal_status
+  %dt= Device.human_attribute_name :apple_warranty
+  %dd= @device.apple_warranty
+  %dt= Device.human_attribute_name :eligibility_date
+  %dd= @device.eligibility_date
+  %dt= Device.human_attribute_name :number_for_forwarding
+  %dd= @device.number_for_forwarding
+  %dt= Device.human_attribute_name :call_forwarding_status
+  %dd= @device.call_forwarding_status
+  %dt= Device.human_attribute_name :asset_tag
+  %dd= @device.asset_tag

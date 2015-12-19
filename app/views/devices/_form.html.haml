@@ -1,0 +1,36 @@
+= simple_form_for(@device) do |f|
+  = f.error_notification
+
+  .form-inputs
+    = f.input :number
+    = f.association :customer
+    = f.association :device_make
+    = f.association :device_model
+    = f.input :status
+    = f.input :imei_number
+    = f.input :sim_number
+    = f.input :model
+    = f.association :carrier_base
+    = f.association :business_account
+    = f.input :contract_expiry_date
+    = f.input :username
+    = f.input :location
+    = f.input :email
+    = f.input :employee_number
+    = f.input :contact_id
+    = f.input :inactive
+    = f.input :in_suspension
+    = f.input :is_roaming
+    = f.input :additional_data_old
+    = f.input :added_features
+    = f.input :current_rate_plan
+    = f.input :data_usage_status
+    = f.input :transfer_to_personal_status
+    = f.input :apple_warranty
+    = f.input :eligibility_date
+    = f.input :number_for_forwarding
+    = f.input :call_forwarding_status
+    = f.input :asset_tag
+
+  .form-actions
+    = f.button :submit

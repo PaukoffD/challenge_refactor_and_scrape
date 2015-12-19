@@ -1,0 +1,82 @@
+- title t('.title')
+
+%p.nav= link_to t('.new_device'), new_device_path, class: 'new'
+
+- if @devices.limit(1).size > 0
+  %table
+    %thead
+      %tr
+        %th= Device.human_attribute_name :number
+        %th= Device.human_attribute_name :customer
+        %th= Device.human_attribute_name :device_make
+        %th= Device.human_attribute_name :device_model
+        %th= Device.human_attribute_name :status
+        %th= Device.human_attribute_name :imei_number
+        %th= Device.human_attribute_name :sim_number
+        %th= Device.human_attribute_name :model
+        %th= Device.human_attribute_name :carrier_base
+        %th= Device.human_attribute_name :business_account
+        %th= Device.human_attribute_name :contract_expiry_date
+        %th= Device.human_attribute_name :username
+        %th= Device.human_attribute_name :location
+        %th= Device.human_attribute_name :email
+        %th= Device.human_attribute_name :employee_number
+        %th= Device.human_attribute_name :contact_id
+        %th= Device.human_attribute_name :inactive
+        %th= Device.human_attribute_name :in_suspension
+        %th= Device.human_attribute_name :is_roaming
+        %th= Device.human_attribute_name :additional_data_old
+        %th= Device.human_attribute_name :added_features
+        %th= Device.human_attribute_name :current_rate_plan
+        %th= Device.human_attribute_name :data_usage_status
+        %th= Device.human_attribute_name :transfer_to_personal_status
+        %th= Device.human_attribute_name :apple_warranty
+        %th= Device.human_attribute_name :eligibility_date
+        %th= Device.human_attribute_name :number_for_forwarding
+        %th= Device.human_attribute_name :call_forwarding_status
+        %th= Device.human_attribute_name :asset_tag
+        %th{:colspan => 3}= t 'actions'
+
+    %tbody
+      - @devices.each do |device|
+        %tr{ :class => cycle(:odd, :even) }
+          %td= device.number
+          %td= device.customer.try :name
+          %td= device.device_make.try :name
+          %td= device.device_model.try :name
+          %td= device.status
+          %td= device.imei_number
+          %td= device.sim_number
+          %td= device.model
+          %td= device.carrier_base.try :name
+          %td= device.business_account.try :name
+          %td= device.contract_expiry_date
+          %td= device.username
+          %td= device.location
+          %td= device.email
+          %td= device.employee_number
+          %td= device.contact_id
+          %td= device.inactive
+          %td= device.in_suspension
+          %td= device.is_roaming
+          %td= device.additional_data_old
+          %td= device.added_features
+          %td= device.current_rate_plan
+          %td= device.data_usage_status
+          %td= device.transfer_to_personal_status
+          %td= device.apple_warranty
+          %td= device.eligibility_date
+          %td= device.number_for_forwarding
+          %td= device.call_forwarding_status
+          %td= device.asset_tag
+          %td.action
+            = link_to t('show'), device, class: 'show'
+          %td.action
+            = link_to t('edit'), edit_device_path(device), class: 'edit'
+          %td.action
+            = link_to t('destroy'), device,
+                data: {confirm: t('.confirm', default: 'Are you sure?')},
+                method: :delete, class: 'destroy'
+- else
+  .empty
+    = t '.empty'

@@ -1,0 +1,55 @@
+---
+en:
+  activerecord:
+    models:
+      device: "Device"
+    attributes:
+      device: 
+        number: "Number"
+        customer: "Customer"
+        device_make: "Device make"
+        device_model: "Device model"
+        status: "Status"
+        imei_number: "Imei number"
+        sim_number: "Sim number"
+        model: "Model"
+        carrier_base: "Carrier base"
+        business_account: "Business account"
+        contract_expiry_date: "Contract expiry date"
+        username: "Username"
+        location: "Location"
+        email: "Email"
+        employee_number: "Employee number"
+        contact_id: "Contact"
+        inactive: "Inactive"
+        in_suspension: "In suspension"
+        is_roaming: "Is roaming"
+        additional_data_old: "Additional data old"
+        added_features: "Added features"
+        current_rate_plan: "Current rate plan"
+        data_usage_status: "Data usage status"
+        transfer_to_personal_status: "Transfer to personal status"
+        apple_warranty: "Apple warranty"
+        eligibility_date: "Eligibility date"
+        number_for_forwarding: "Number for forwarding"
+        call_forwarding_status: "Call forwarding status"
+        asset_tag: "Asset tag"
+  helpers:
+    submit:
+      device:
+        create: "Create device"
+        update: "Update device"
+  devices:
+    edit:
+      title: "Editing of the device"
+    form:
+      device: "Device"
+    index:
+      confirm: "Are you sure you want to delete the device?"
+      empty: "No devices found"
+      new_device: "Add a new device"
+      title: "Listing of devices"
+    new:
+      title: "Adding a new device"
+    show:
+      title: "Device details"

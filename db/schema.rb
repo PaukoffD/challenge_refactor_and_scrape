@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151218180759) do
+ActiveRecord::Schema.define(version: 20151219180152) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -24,6 +24,11 @@ ActiveRecord::Schema.define(version: 20151218180759) do
   end
 
   add_index "accounting_categories", ["accounting_type_id"], name: "index_accounting_categories_on_accounting_type_id", using: :btree
+
+  create_table "accounting_categories_devices", id: false, force: :cascade do |t|
+    t.integer "accounting_category_id", null: false
+    t.integer "device_id",              null: false
+  end
 
   create_table "accounting_types", force: :cascade do |t|
     t.integer  "customer_id"
@@ -67,7 +72,52 @@ ActiveRecord::Schema.define(version: 20151218180759) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "devices", force: :cascade do |t|
+    t.string   "number"
+    t.integer  "customer_id"
+    t.integer  "device_make_id"
+    t.integer  "device_model_id"
+    t.string   "status"
+    t.string   "imei_number"
+    t.string   "sim_number"
+    t.string   "model"
+    t.integer  "carrier_base_id"
+    t.integer  "business_account_id"
+    t.date     "contract_expiry_date"
+    t.string   "username"
+    t.string   "location"
+    t.string   "email"
+    t.string   "employee_number"
+    t.string   "contact_id"
+    t.boolean  "inactive"
+    t.boolean  "in_suspension"
+    t.boolean  "is_roaming"
+    t.string   "additional_data_old"
+    t.string   "added_features"
+    t.string   "current_rate_plan"
+    t.string   "data_usage_status"
+    t.string   "transfer_to_personal_status"
+    t.string   "apple_warranty"
+    t.string   "eligibility_date"
+    t.string   "number_for_forwarding"
+    t.string   "call_forwarding_status"
+    t.string   "asset_tag"
+    t.datetime "created_at",                  null: false
+    t.datetime "updated_at",                  null: false
+  end
+
+  add_index "devices", ["business_account_id"], name: "index_devices_on_business_account_id", using: :btree
+  add_index "devices", ["carrier_base_id"], name: "index_devices_on_carrier_base_id", using: :btree
+  add_index "devices", ["customer_id"], name: "index_devices_on_customer_id", using: :btree
+  add_index "devices", ["device_make_id"], name: "index_devices_on_device_make_id", using: :btree
+  add_index "devices", ["device_model_id"], name: "index_devices_on_device_model_id", using: :btree
+
   add_foreign_key "accounting_categories", "accounting_types"
   add_foreign_key "accounting_types", "customers"
   add_foreign_key "business_accounts", "customers"
+  add_foreign_key "devices", "business_accounts"
+  add_foreign_key "devices", "carrier_bases"
+  add_foreign_key "devices", "customers"
+  add_foreign_key "devices", "device_makes"
+  add_foreign_key "devices", "device_models"
 end

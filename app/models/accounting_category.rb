@@ -14,6 +14,7 @@
 class AccountingCategory < ActiveRecord::Base
 
   belongs_to :accounting_type
+  has_and_belongs_to_many :devices
 
   validates :name, presence: true, uniqueness: {scope: :accounting_type_id}
 
