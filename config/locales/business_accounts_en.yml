@@ -5,4 +5,5 @@ en:
       business_account: "Business account"
     attributes:
       business_account:
+        customer: "Customer"
         name: "Name"

@@ -5,6 +5,7 @@ en:
       accounting_type: "Accounting Type"
     attributes:
       accounting_type:
+        accounting_categories: 'Accounting categories'
         customer: Customer
         customer_id: Customer
-        name: "Name"
+        name: Name

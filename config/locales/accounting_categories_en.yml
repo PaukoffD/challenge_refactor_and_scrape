@@ -7,4 +7,5 @@ en:
       accounting_category:
         accounting_type: 'Accounting Type'
         accounting_type_id: 'Accounting Type'
+        devices: 'Devices'
         name: "Name"

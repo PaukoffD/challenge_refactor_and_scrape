@@ -5,6 +5,9 @@ en:
       customer: "Customer"
     attributes:
       customer: 
+        accounting_types: 'Accounting types'
+        business_accounts: 'Business accounts'
+        devices: 'Devices'
         name: "Name"
   helpers:
     submit:
