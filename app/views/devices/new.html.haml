@@ -1,5 +1,5 @@
-- title t('.title')
+- title t('.title', name: @customer.name)
 
-%p.nav= link_to t('back'), devices_path, class: 'index'
+%p.nav= link_to t('back'), customer_devices_path(@customer), class: 'index'
 
 = render 'form'

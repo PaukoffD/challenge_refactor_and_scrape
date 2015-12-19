@@ -4,6 +4,7 @@ describe "devices/index", type: :view do
   before(:each) do
     @device = create(:device)
     assign(:devices, Device.all)
+    @customer = assign :customer, @device.customer
   end
 
   it "renders a list of devices" do
@@ -40,4 +41,8 @@ describe "devices/index", type: :view do
     assert_select 'tr>td', text: @device.asset_tag.to_s, count: 10
   end
 
+  it 'has the link to the customer' do
+    render
+    assert_select 'a[href=?]', customer_path(@customer)
+  end
 end

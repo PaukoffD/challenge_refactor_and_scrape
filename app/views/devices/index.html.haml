@@ -1,6 +1,8 @@
-- title t('.title')
+- title t('.title', name: @customer.name)
 
-%p.nav= link_to t('.new_device'), new_device_path, class: 'new'
+%p.nav
+  = link_to t('.new_device'), new_customer_device_path(@customer), class: 'new'
+  = link_to t('.back'), @customer, class: 'index'
 
 - if @devices.limit(1).size > 0
   %table

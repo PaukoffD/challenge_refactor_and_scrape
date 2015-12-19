@@ -7,3 +7,5 @@
 %dl
   %dt= Customer.human_attribute_name :name
   %dd= @customer.name
+  %dt
+    = link_to Customer.human_attribute_name(:devices), customer_devices_path(@customer)

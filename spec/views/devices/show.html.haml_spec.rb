@@ -3,6 +3,7 @@ require 'rails_helper'
 describe "devices/show", type: :view do
   before(:each) do
     @device = assign(:device, create(:device))
+    assign :customer, @device.customer
   end
 
   it "renders attributes in <dl>" do

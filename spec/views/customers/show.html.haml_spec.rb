@@ -9,4 +9,9 @@ describe "customers/show", type: :view do
     render
     assert_select 'dl>dd', text: Regexp.new(@customer.name.to_s)
   end
+
+  it 'has the link to the devices' do
+    render
+    assert_select 'a[href=?]', customer_devices_path(@customer)
+  end
 end

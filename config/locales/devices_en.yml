@@ -46,11 +46,12 @@ en:
     form:
       device: "Device"
     index:
+      back: 'Back to the customer'
       confirm: "Are you sure you want to delete the device?"
       empty: "No devices found"
       new_device: "Add a new device"
-      title: "Listing of devices"
+      title: "Listing of devices of the customer %{name}"
     new:
-      title: "Adding a new device"
+      title: "Adding a new device for the customer %{name}"
     show:
       title: "Device details"

@@ -4,11 +4,11 @@ RSpec.describe DevicesController, type: :routing do
   describe "routing" do
 
     it "routes to #index" do
-      expect(:get => "/devices").to route_to("devices#index")
+      expect(:get => "/customers/1/devices").to route_to("devices#index", customer_id: '1')
     end
 
     it "routes to #new" do
-      expect(:get => "/devices/new").to route_to("devices#new")
+      expect(:get => "/customers/1/devices/new").to route_to("devices#new", customer_id: '1')
     end
 
     it "routes to #show" do
@@ -20,7 +20,7 @@ RSpec.describe DevicesController, type: :routing do
     end
 
     it "routes to #create" do
-      expect(:post => "/devices").to route_to("devices#create")
+      expect(:post => "/customers/1/devices").to route_to("devices#create", customer_id: '1')
     end
 
     it "routes to #update via PUT" do

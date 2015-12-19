@@ -3,14 +3,15 @@ require 'rails_helper'
 describe "devices/new", type: :view do
   before(:each) do
     @device = assign(:device, build(:device))
+    @customer = assign :customer, @device.customer
   end
 
   it "renders new device form" do
     render
 
-    assert_select "form[action='#{devices_path}'][method='post']" do
+    assert_select "form[action='#{customer_devices_path @customer}'][method='post']" do
       assert_select 'input#device_number[name=?]', 'device[number]'
-      assert_select 'select#device_customer_id[name=?]', 'device[customer_id]'
+      assert_select 'select#device_customer_id[name=?]', 'device[customer_id]', count: 0
       assert_select 'select#device_device_make_id[name=?]', 'device[device_make_id]'
       assert_select 'select#device_device_model_id[name=?]', 'device[device_model_id]'
       assert_select 'input#device_status[name=?]', 'device[status]'

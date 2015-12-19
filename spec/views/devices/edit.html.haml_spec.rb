@@ -3,6 +3,7 @@ require 'rails_helper'
 describe "devices/edit", type: :view do
   before(:each) do
     @device = assign(:device, create(:device))
+    assign :customer, @device.customer
   end
 
   it "renders the edit device form" do
@@ -10,7 +11,7 @@ describe "devices/edit", type: :view do
 
     assert_select "form[action='#{device_path(@device)}'][method='post']" do
       assert_select 'input#device_number[name=?]', 'device[number]'
-      assert_select 'select#device_customer_id[name=?]', 'device[customer_id]'
+      assert_select 'select#device_customer_id[name=?]', 'device[customer_id]', count: 0
       assert_select 'select#device_device_make_id[name=?]', 'device[device_make_id]'
       assert_select 'select#device_device_model_id[name=?]', 'device[device_model_id]'
       assert_select 'input#device_status[name=?]', 'device[status]'
