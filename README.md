@@ -245,11 +245,12 @@ But for now, please make an assumption and document it somewhere or just write a
 ### Notes
 
 1. For sure for simplicity the authorization and authentications are omitted. The controller variable `current_user` will return a string while `Device#track!` will save this string to the `created_by` instead of `User#id` ;-)
-1. It would be not bad to strip `AccountingCategory#name` at the `save` in order not to do it each time. ;-)
+1. For sure db/seeds.rp is needed only for the purpose of this task.
 1. It is strange that `AccountingType`s are individual for each `Customer`. Should not it be considered to try to use the common dictionary?
 1. Why not to create a new `AccountingType` if it is missing?
 1. As the sample csv file for devices contains different values in the field `username` and exiting code processes all the lines of the csv file, I assume it is the field of the `Device` that refers to some person affiliated to `Customer`.
 The warning on the line 7 thus means something not implied from and not corresponding to the code of `DevicesController#import`.
+1. It would be not bad to strip `AccountingCategory#name` at the `save` in order not to do it each time. ;-)
 
 ### Bugs found
 
@@ -261,5 +262,7 @@ I'm not sure, but the following things seems to be buggy. Maybe some of them is 
   1. `Customer` should have `have_and_belongs_to_many :carrier_bases`
   2. The csv file should not contain field `carrier_base_id`.
   3. The code must process `carrier_base_id` field properly. Now it nullifies it.
-1. There is no diagnostics when `accounting_categories` for any `AccountingType` has unknown value.
+
+  So I decided that the most obvious case takes place, `:carrier_base` is the assosiation of `Device`. Since the nullification of the `carrier_base_id` causes exception I've **FIXED** this bug.
 1. The columns in csv file that are unknown for `Device` are not filtered out and cause an error.
+1. There is no diagnostics when `accounting_categories` for any `AccountingType` has unknown value.

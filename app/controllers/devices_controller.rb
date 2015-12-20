@@ -34,11 +34,13 @@ class DevicesController < InheritedResources::Base
           else
             Device.reflections.each do |k, reflection|
               if reflection.foreign_key == col
-                puts reflection.inspect
+                logger.debug "DevicesController@#{__LINE__}#import #{reflection.inspect}" if logger.debug?
+                accessor = reflection.klass.respond_to?(:export_key) ? reflection.klass.send(:export_key) : 'name'
                 method = reflection.plural_name.to_sym
                 if @customer.respond_to?(method)
-                  accessor = reflection.klass.respond_to?(:export_key) ? reflection.klass.send(:export_key) : 'name'
                   lookups[col] = Hash[@customer.send(method).pluck(accessor, :id)]
+                else
+                  lookups[col] = Hash[reflection.klass.pluck(accessor, :id)]
                 end
               end
             end
