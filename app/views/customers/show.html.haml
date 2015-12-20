@@ -9,3 +9,4 @@
   %dd= @customer.name
   %dt
     = link_to Customer.human_attribute_name(:devices), customer_devices_path(@customer)
+  %dd= link_to t('.import'), import_customer_devices_path(@customer)

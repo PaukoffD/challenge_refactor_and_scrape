@@ -27,6 +27,7 @@ en:
     new:
       title: "Adding a new customer"
     show:
+      import: 'Import devices from the file'
       title: "Customer details"
     was_created: "Customer was successfully added"
     was_deleted: "Customer was successfully deleted"

@@ -35,5 +35,13 @@ RSpec.describe DevicesController, type: :routing do
       expect(:delete => "/devices/1").to route_to("devices#destroy", :id => "1")
     end
 
+    it 'routes to #import via GET' do
+      expect(:get => "/customers/1/devices/import").to route_to("devices#import", customer_id: '1')
+    end
+
+    it 'routes to #import via POST' do
+      expect(:post => "/customers/1/devices/import").to route_to("devices#import", customer_id: '1')
+    end
+
   end
 end

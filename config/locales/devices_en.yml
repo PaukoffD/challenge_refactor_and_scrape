@@ -45,6 +45,22 @@ en:
       title: "Editing of the device"
     form:
       device: "Device"
+    import:
+      clear_existing_data: 'Clear existing data'
+      device_errors:
+        one: 'Error for the device # %{number}'
+        other: 'Errors for the device # %{number}'
+      errors:
+        one: 'An error was issued'
+        other: '%{count} errors were issued'
+      general_errors:
+        one: 'General error'
+        other: 'General errors'
+      title: 'Importing devices for the customer %{name}'
+      upload: 'Upload and import file'
+      warning:
+        one: 'A warning was issued'
+        other: '%{count} warnings were issued'
     index:
       back: 'Back to the customer'
       confirm: "Are you sure you want to delete the device?"

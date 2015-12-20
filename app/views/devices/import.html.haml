@@ -1,0 +1,32 @@
+- title t('.title', name: @customer.name)
+
+%p.nav= link_to t('back'), customer_path(@customer), class: 'index'
+
+- if @warnings.present?
+  %h3= t '.warning', count: @warnings.size
+  %dl.warnings
+    - @warnings.each do |text|
+      %dd= text
+
+- if @errors.present?
+  - @errors.each{|k, v| @errors[k] = Array.wrap v}
+  %h3= t '.errors', count: @errors.values.flatten.size
+  %dl.errors
+    - if errors = @errors.delete('General')
+      %dt= t '.general_errors', count: errors.size
+      - errors.each do |text|
+        %dd= text
+    - @errors.each do |number, errors|
+      %dt= t '.device_errors', count: errors.size, number: number
+      - errors.each do |text|
+        %dd= text
+
+= form_tag import_customer_devices_path(@customer), multipart: true do
+  .import_file
+    = label_tag :import_file, t('.import_file')
+    = file_field_tag :import_file
+  .clear_existing_data
+    = check_box_tag :clear_existing_data
+    = label_tag :clear_existing_data, t('.clear_existing_data')
+  .submit
+    = submit_tag t('.upload')
