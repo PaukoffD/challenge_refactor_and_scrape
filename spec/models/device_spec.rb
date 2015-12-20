@@ -44,10 +44,13 @@ describe Device, type: :model do
 
   it { should be_valid }
 
-  it {should validate_presence_of :number}
-  it {should validate_uniqueness_of :number}
+  it {should validate_presence_of :business_account}
   it {should validate_presence_of :customer}
+  it {should validate_presence_of :device_make}
+  it {should validate_presence_of :number}
   it {should validate_presence_of :status}
+  it {should validate_presence_of :username}
+  it {should validate_uniqueness_of :number}
 
   it {should belong_to :business_account}
   it {should belong_to :carrier_base}

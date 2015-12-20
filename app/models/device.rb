@@ -48,7 +48,8 @@ class Device < ActiveRecord::Base
   has_and_belongs_to_many :accounting_categories
 
   validates :number, presence: true, uniqueness: true
-  validates :customer, :status, presence: true
+  validates :business_account, :customer, :device_make, :status, :username,
+      presence: true
 
   scope :ordered, -> { order(:number) }
 
