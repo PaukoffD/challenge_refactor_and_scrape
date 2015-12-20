@@ -56,6 +56,31 @@ describe Device, type: :model do
   it {should belong_to :device_model}
   it {should have_and_belong_to_many :accounting_categories}
 
+  describe '#cancelled?' do
+    context 'when status is not "cancelled"' do
+      it 'returns false' do
+        expect(subject.cancelled?).to be false
+      end
+    end   # when status is "cancelled"
+
+    context 'when status is "cancelled"' do
+      subject {create :device, status: 'cancelled'}
+      it 'returns true' do
+        expect(subject.cancelled?).to be true
+      end
+    end   # when status is "cancelled"
+  end   #cancelled?
+
+  describe '#track!' do
+    it 'shoud call the block'do
+      expect { |b| subject.track!(&b) }.to yield_with_no_args
+    end
+
+    it 'assigns attributes given' do
+      skip 'FIXME: It is needed to add necessary attributes'
+    end
+  end   #track!
+
   describe :class do
     describe :scope do
       describe '.ordered' do

@@ -52,6 +52,15 @@ class Device < ActiveRecord::Base
 
   scope :ordered, -> { order(:number) }
 
+  def cancelled?
+    status == 'cancelled'
+  end
+
+  def track!(attributtes = {})
+    # FIXME: add attributtes processing
+    yield
+  end
+
   class << self
     def import_export_columns
       blacklist = %w{
