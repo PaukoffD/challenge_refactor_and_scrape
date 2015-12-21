@@ -18,12 +18,14 @@ class DevicesController < InheritedResources::Base
 
     return unless request.post?
 
-    @errors          = {}
-    lookups          = {}
-    data             = {}
-    updated_devices  = {}
-    removed_devices  = []
-    clear_existing_data = params[:clear_existing_data]
+    # We need this in a string since we parse it twice and Ruby will
+    # automatically close and GC it if we don't
+    import_file = params[:import_file]
+    return flash[:error] = 'Please upload a file to be imported' if import_file.blank?
+    contents = import_file.tempfile.read.encode(invalid: :replace, replace: '')
+
+    @errors = {}
+    lookups = {}
 
     # Here we form the lookups Hash that for each key that can appear
     # in the input record comum name supplies the Hash of pairs vaule => :id
@@ -40,7 +42,7 @@ class DevicesController < InheritedResources::Base
         else
           Device.reflections.each do |k, reflection|
             if reflection.foreign_key == col
-              logger.debug "DevicesController@#{__LINE__}#import #{reflection.inspect}" if logger.debug?
+              logger.debug "DevicesController@#{__LINE__}#import #{k}" if logger.debug?
               accessor = reflection.klass.respond_to?(:export_key) ? reflection.klass.send(:export_key) : 'name'
               method = reflection.plural_name.to_sym
               if @customer.respond_to?(method)
@@ -57,15 +59,7 @@ class DevicesController < InheritedResources::Base
     @customer.accounting_types.each do |acc_type|
       lookups["accounting_categories[#{acc_type.name}]"] = Hash[acc_type.accounting_categories.pluck(:name, :id).map{|k,v| [k.strip, v]}]
     end
-
-    # We need this in a string since we parse it twice and Ruby will
-    # automatically close and GC it if we don't
-    import_file = params[:import_file]
-    if !import_file
-      return flash[:error] = 'Please upload a file to be imported'
-    end
-
-    contents = import_file.tempfile.read.encode(invalid: :replace, replace: '')
+    logger.debug "DevicesController@#{__LINE__}#import #{lookups.inspect}" if logger.debug?
 
     # Check that input file has only existing accounting_categories names
     begin
@@ -83,25 +77,26 @@ class DevicesController < InheritedResources::Base
       @errors['General'] = [e.message]
     end
 
-    if @errors.length.nonzero?
-      return
-    end
+    return if @errors.present?
 
+    # Prepare the data Hash to apply to Devices
+    data = {}
     begin
       CSV.parse(contents, headers: true, encoding: 'UTF-8').each_with_index do |row, index|
         accounting_categories = []
         row_data = row.to_hash.merge(customer_id: @customer.id)
+        logger.debug "DevicesController@#{__LINE__}#import #{row_data.inspect}" if logger.debug?
 
         # Check validity of the number
         # Hardcode the number, just to make sure we don't run into issues
-        number = row_data['number'] = row_data['number'].gsub(/\D+/,'')
+        number = row_data['number'] = row_data['number'].try :gsub, /\D+/, ''
         (@errors['General'] ||= []) << "An entry around line #{index} has no number" and next if number.blank?
         (@errors[number] ||= []) << "Is a duplicate entry" and next if data[number]
 
-        # Process sthrin assingments
+        # Process string assingments
         row_data = Hash[row_data.map{|k, v| [k, v =~ /^="(.*?)"/ ? $1 : v] }]
 
-        # Replace the values with the ids from lookups
+        # Replace the values with the ids from lookups and Boolean
         row_data.keys.each do |attr|
           value = row_data[attr]
           if lookups.key? attr
@@ -130,8 +125,10 @@ class DevicesController < InheritedResources::Base
         data[number] = row_data.select{|attr, value| attr }
       end
     rescue => e
+      logger.info "DevicesController@#{__LINE__}#import #{e.message}\n#{e.backtrace.join "\n"}"
       @errors['General'] = [e.message]
     end
+    logger.debug "DevicesController@#{__LINE__}#import #{data.inspect}" if logger.debug?
 
     # Duplicated_numbers
     Device.where(number: data.keys)
@@ -144,27 +141,34 @@ class DevicesController < InheritedResources::Base
     end
 
     # Shortcut here to get basic errors out of the way
-    return if @errors.length > 0
+    logger.debug "DevicesController@#{__LINE__}#import #{@errors.inspect}" if logger.debug?
+    return if @errors.present?
 
+    # Form the lists of devices to be updated and removed
+    updated_devices = {}
+    removed_devices = []
     @customer.devices.each do |device|
       if data.has_key?(device.number)
         updated_devices[device.number] = device
-      elsif clear_existing_data
+      elsif params[:clear_existing_data]
         removed_devices << device
       end
     end
-
     data.each do |number, attributes|
       updated_devices[number] = Device.new unless updated_devices[number]
     end
 
+    # FIXME: Duplicated are already processed, so invalid_devices below should
+    # be empty and this block of code not needed.
     number_conditions = []
     updated_devices.each do |number, device|
       device.assign_attributes(data[number])
-      @errors[number] = device.errors.full_messages unless device.valid?
+      unless device.valid?
+        logger.debug "DevicesController@#{__LINE__}#import #{data[number].inspect} #{device.errors.messages.inspect}" if logger.debug?
+        @errors[number] = device.errors.full_messages
+      end
       number_conditions << "(number = '#{number}' AND status <> 'cancelled')" unless device.cancelled?
     end
-
     if number_conditions.size.nonzero?
       invalid_devices = Device.unscoped.where("(#{number_conditions.join(' OR ')}) AND customer_id != ?", @customer.id)
       invalid_devices.each do |device|
