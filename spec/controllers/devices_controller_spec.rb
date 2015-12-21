@@ -240,6 +240,12 @@ describe DevicesController, type: :controller do
       create :accounting_category, accounting_type: accounting_type, name: '10010.8350'
     end
     let(:business_account) {create :business_account, customer: customer, name: '01074132'}
+    let(:file)  {fixture_file_upload '/one_deivce.csv'}
+
+    it 'calls Device.lookups with customer' do
+      expect(Device).to receive(:lookups).with(customer)
+      post :import, {customer_id: customer.id, import_file: file}, valid_session
+    end
 
     context 'with the csv data file porvided' do
       data = {

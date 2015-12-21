@@ -128,6 +128,64 @@ describe Device, type: :model do
         ]
       end
     end   # .import_export_columns
+
+    describe '.lookups' do
+      lookup_keys = [
+        'accounting_categories[Cost Center]',
+        'business_account_id',
+        'carrier_base_id',
+        'device_make_id',
+        'device_model_id',
+      ]
+      let(:customer) {create :customer}
+      let(:accounting_type) {create :accounting_type, customer: customer, name: 'Cost Center'}
+      let(:accounting_category) do
+        create :accounting_category, accounting_type: accounting_type, name: '10010.8350'
+      end
+      let(:business_account) {create :business_account, customer: customer, name: '01074132'}
+      let(:device_make) {create :device_make}
+      let(:device_model) {create :device_model}
+      let(:carrier_base) {create :carrier_base}
+
+      before :each do
+        # to create
+        accounting_category
+        business_account
+        device_make
+        device_model
+        carrier_base
+      end   # before :each
+
+      it "returns a Hash with the keys #{lookup_keys}" do
+        expect(Device.lookups customer).to be_a_kind_of(Hash)
+        expect(Device.lookups(customer).keys.sort).to eq lookup_keys
+      end
+
+      it '["accounting_categories[Cost Center]"] is a Hash' do
+        expect(Device.lookups(customer)['accounting_categories[Cost Center]'])
+            .to eq accounting_category.name => accounting_category.id
+      end
+
+      it '[:business_account_id] is a Hash' do
+        expect(Device.lookups(customer)[:business_account_id])
+            .to eq business_account.name => business_account.id
+      end
+
+      it '[:carrier_base_id] is a Hash' do
+        expect(Device.lookups(customer)[:carrier_base_id])
+            .to eq carrier_base.name => carrier_base.id
+      end
+
+      it '[:device_make_id] is a Hash' do
+        expect(Device.lookups(customer)[:device_make_id])
+            .to eq device_make.name => device_make.id
+      end
+
+      it '[:device_model_id] is a Hash' do
+        expect(Device.lookups(customer)[:device_model_id])
+            .to eq device_model.name => device_model.id
+      end
+    end     # .lookups
   end   # class
 
 end

@@ -25,40 +25,7 @@ class DevicesController < InheritedResources::Base
     contents = import_file.tempfile.read.encode(invalid: :replace, replace: '')
 
     @errors = {}
-    lookups = {}
-
-    # Here we form the lookups Hash that for each key that can appear
-    # in the input record comum name supplies the Hash of pairs vaule => :id
-    #
-    # If an association Class respond_to :export_key the name returned
-    # will be used insted of "name"
-    Device.import_export_columns.each do |col|
-      if col =~ /^(\w+)_id/
-        case col
-        when 'device_make_id'
-          lookups[col] = Hash[DeviceMake.pluck(:name, :id)]
-        when 'device_model_id'
-          lookups[col] = Hash[DeviceModel.pluck(:name, :id)]
-        else
-          Device.reflections.each do |k, reflection|
-            if reflection.foreign_key == col
-              logger.debug "DevicesController@#{__LINE__}#import #{k}" if logger.debug?
-              accessor = reflection.klass.respond_to?(:export_key) ? reflection.klass.send(:export_key) : 'name'
-              method = reflection.plural_name.to_sym
-              if @customer.respond_to?(method)
-                lookups[col] = Hash[@customer.send(method).pluck(accessor, :id)]
-              else
-                lookups[col] = Hash[reflection.klass.pluck(accessor, :id)]
-              end
-            end
-          end
-        end
-      end
-    end   # Device.import_export_columns.each
-
-    @customer.accounting_types.each do |acc_type|
-      lookups["accounting_categories[#{acc_type.name}]"] = Hash[acc_type.accounting_categories.pluck(:name, :id).map{|k,v| [k.strip, v]}]
-    end
+    lookups = Device.lookups @customer
     logger.debug "DevicesController@#{__LINE__}#import #{lookups.inspect}" if logger.debug?
 
     # Check that input file has only existing accounting_categories names

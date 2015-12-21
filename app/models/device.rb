@@ -78,6 +78,43 @@ class Device < ActiveRecord::Base
         carrier_rate_plan_id
       }
       (column_names - blacklist).reject{ |c| c =~ /_at$/ } # Reject timestamps
-    end
+    end   # import_export_columns
+
+    def lookups(customer)
+      @@lookups ||= {}
+      lookups = (@@lookups[customer.to_param] ||= {}.with_indifferent_access)
+
+      import_export_columns.each do |attr|
+        if attr =~ /^(\w+)_id/
+          case attr
+          when 'device_make_id'
+            lookups[attr] = Hash[DeviceMake.pluck(:name, :id)]
+          when 'device_model_id'
+            lookups[attr] = Hash[DeviceModel.pluck(:name, :id)]
+          else
+            reflections.each do |k, reflection|
+              if reflection.foreign_key == attr
+                logger.debug "Device@#{__LINE__}lookups #{k}" if logger.debug?
+                accessor = reflection.klass.respond_to?(:export_key) ? reflection.klass.send(:export_key) : 'name'
+                method = reflection.plural_name.to_sym
+                if customer.respond_to?(method)
+                  lookups[attr] = Hash[customer.send(method).pluck(accessor, :id)]
+                else
+                  lookups[attr] = Hash[reflection.klass.pluck(accessor, :id)]
+                end
+              end
+            end
+          end
+        end
+      end
+      customer.accounting_types.each do |acc_type|
+        lookups["accounting_categories[#{acc_type.name}]"] =
+            acc_type.accounting_categories.pluck(:name, :id)
+              .each_with_object({}) do |(name, id), hash|
+                hash[name.strip] = id
+              end
+      end
+      lookups
+    end   # lookups
   end   # class << self
 end
