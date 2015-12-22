@@ -42,7 +42,11 @@ class DevicesController < InheritedResources::Base
     logger.debug "DevicesController@#{__LINE__}#import #{@errors.inspect}" if logger.debug?
     return @errors.values.each do |error|
       error.map! do |code, line, value1, value2|
-        t ".#{code}", line: line, value1: value1, value2: value2
+        if code.is_a? Symbol
+          t ".#{code}", line: line, value1: value1, value2: value2
+        else
+          code
+        end
       end
     end if @errors.present?
 

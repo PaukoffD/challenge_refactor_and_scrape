@@ -422,7 +422,7 @@ describe DevicesController, type: :controller do
         it 'adds the General error to the @errors' do
           post :import, {customer_id: customer.id, import_file: file}, valid_session
           expect(assigns(:errors).size).to be 1
-          expect(assigns(:errors)['General'].size).to be 1
+          expect(assigns(:errors)['General']).to eq ["An entry at the line 2 has no number"]
         end
       end   # when a line in the csv file has not a device number
 
@@ -446,7 +446,7 @@ describe DevicesController, type: :controller do
         it 'adds the error for this device number to the @errors' do
           post :import, {customer_id: customer.id, import_file: file}, valid_session
           expect(assigns(:errors).size).to be 1
-          expect(assigns(:errors)['4038283663'].size).to be 1
+          expect(assigns(:errors)['4038283663']).to eq ["There is a duplicate entry at the line 3"]
         end
       end   # when a device number is repeated on a line
 
@@ -469,7 +469,7 @@ describe DevicesController, type: :controller do
         it 'adds the error for this device number to the @errors' do
           post :import, {customer_id: customer.id, import_file: file}, valid_session
           expect(assigns(:errors).size).to be 1
-          expect(assigns(:errors)['4038283663'].size).to be 1
+          expect(assigns(:errors)['4038283663']).to eq ['New "Cost Center" code: "10010.8351" at the line 2']
         end
       end   # with an unknown accounting_category
     end   # with a mminimal set of fields
@@ -525,6 +525,7 @@ describe DevicesController, type: :controller do
             post :import, {customer_id: customer.id, import_file: file}, valid_session
             expect(assigns(:errors).size).to be 1
             expect(assigns(:errors)['4038283663'].size).to be 1
+            expect(assigns(:errors)['4038283663']).to eq ["Duplicate number. The number can only be processed once, please ensure it's on the active account number."]
           end
         end   # and the status of the new one is not "cancelled
 
