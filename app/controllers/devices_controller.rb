@@ -30,17 +30,13 @@ class DevicesController < InheritedResources::Base
     return @errors['General'] = t('.not_csv') unless csv.is_a? CSV::Table
     return @errors['General'] = t('.not_row') unless csv.first.is_a? CSV::Row
 
-    lookups = Device.lookups @customer
-
     # Check that headers have only existing accounting_types
-    unknown = csv.headers.select do |header|
-      header =~ /accounting_categories\[/
-    end - lookups.keys
-    @errors['General'] = unknown.map do |header|
-      header.match(/accounting_categories\[(.*?)(\]|$)/)
-      "'#{$1}' is not a valid accounting type"
-    end and return if unknown.present?
+    unknown = Device.check_headers @customer, csv.headers
+    return @errors['General'] = unknown.map do |header|
+      t '.unknown_accounting_type', name: header
+    end if unknown.present?
 
+    lookups = Device.lookups @customer
     # Prepare the data Hash to apply to Devices
     data = {}
     begin

@@ -117,5 +117,13 @@ class Device < ActiveRecord::Base
       end
       lookups
     end   # lookups
+
+    def check_headers(customer, headers)
+      (headers.select do |header|
+        header =~ /accounting_categories\[/
+      end - lookups(customer).keys).map do |header|
+        header.match(/accounting_categories\[(.*?)(\]|$)/)[1]
+      end
+    end   # check_headers
   end   # class << self
 end

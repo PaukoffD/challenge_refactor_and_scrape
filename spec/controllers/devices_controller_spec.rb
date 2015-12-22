@@ -243,9 +243,37 @@ describe DevicesController, type: :controller do
     let(:file)  {fixture_file_upload '/one_deivce.csv'}
 
     it 'calls Device.lookups with customer' do
-      expect(Device).to receive(:lookups).with(customer).and_return({})
+      expect(Device).to receive(:lookups).twice.with(customer).and_return({})
       post :import, {customer_id: customer.id, import_file: file}, valid_session
     end
+
+    describe 'calls Device.check_headers with @customer and array of headers and' do
+      let(:headers) {%w[username number device_make_id business_account_id status]}
+
+      context 'when the result is blank' do
+        let(:result) {[]}
+
+        it 'leaves errors["General"] blank' do
+          expect(Device).to receive(:check_headers).with(customer, headers).and_return result
+          post :import, {customer_id: customer.id, import_file: file}, valid_session
+          expect(assigns(:errors)['General']).to be nil
+        end
+      end   # when the result is blank
+
+      context 'when the result has elements' do
+        let(:result) {['Heder']}
+
+        it 'fills errors["General"] with messages if any name is received' do
+          expect(Device).to receive(:check_headers).with(customer, headers).and_return result
+          post :import, {customer_id: customer.id, import_file: file}, valid_session
+          expect(assigns(:errors)['General']).to be_present
+          expect(assigns(:errors)['General'].size).to be 1
+          expect(assigns(:errors)['General'].first).to eq "'Heder' is not a valid accounting type"
+        end
+
+        it 'stops processing'
+      end   # when the result has elements
+    end   # calls Device.check_headers
 
     context 'with file without records' do
       let(:file)  {fixture_file_upload '/only_header.csv'}

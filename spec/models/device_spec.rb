@@ -84,6 +84,16 @@ describe Device, type: :model do
   end   #track!
 
   describe :class do
+    let(:customer) {create :customer}
+    let(:accounting_type) {create :accounting_type, customer: customer, name: 'Cost Center'}
+    let(:accounting_category) do
+      create :accounting_category, accounting_type: accounting_type, name: '10010.8350'
+    end
+    let(:business_account) {create :business_account, customer: customer, name: '01074132'}
+    let(:device_make) {create :device_make}
+    let(:device_model) {create :device_model}
+    let(:carrier_base) {create :carrier_base}
+
     describe :scope do
       describe '.ordered' do
         it 'sort Device by :ordered' do
@@ -137,15 +147,6 @@ describe Device, type: :model do
         'device_make_id',
         'device_model_id',
       ]
-      let(:customer) {create :customer}
-      let(:accounting_type) {create :accounting_type, customer: customer, name: 'Cost Center'}
-      let(:accounting_category) do
-        create :accounting_category, accounting_type: accounting_type, name: '10010.8350'
-      end
-      let(:business_account) {create :business_account, customer: customer, name: '01074132'}
-      let(:device_make) {create :device_make}
-      let(:device_model) {create :device_model}
-      let(:carrier_base) {create :carrier_base}
 
       before :each do
         # to create
@@ -186,6 +187,29 @@ describe Device, type: :model do
             .to eq device_model.name => device_model.id
       end
     end     # .lookups
+
+    describe '.check_headers' do
+      before :each do
+        # to create
+        accounting_category
+      end   # before :each
+
+      context 'when headrs do not contain unknown AccountingType for accounting_category' do
+        let(:headers) {[]}
+
+        it 'returns nil' do
+          expect(Device.check_headers customer, headers).to eq []
+        end
+      end   # when headrs do not contain unknown AccountingType for accounting_category
+
+      context 'when headrs contain unknown AccountingType for accounting_category' do
+        let(:headers) {%w(accounting_categories[Unknow])}
+
+        it 'returns the list of unknown AccountingTypes met' do
+          expect(Device.check_headers customer, headers).to eq %w[Unknow]
+        end
+      end   # when headrs contain unknown AccountingType for accounting_category
+    end   # .check_headers
   end   # class
 
 end
