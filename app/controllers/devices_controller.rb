@@ -18,7 +18,6 @@ class DevicesController < InheritedResources::Base
 
     return unless request.post?
 
-    @errors = {}
     import_file = params[:import_file]
     return flash[:error] = 'Please upload a file to be imported' if import_file.blank?
     clear_existing_data = params[:clear_existing_data]
@@ -27,14 +26,14 @@ class DevicesController < InheritedResources::Base
     # automatically close and GC it if we don't
     contents = import_file.tempfile.read.encode(invalid: :replace, replace: '')
     csv = CSV.parse(contents, headers: true, encoding: 'UTF-8')
-    return @errors['General'] = t('.not_csv') unless csv.is_a? CSV::Table
-    return @errors['General'] = t('.not_row') unless csv.first.is_a? CSV::Row
+    return @errors = {'General' => t('.not_csv')} unless csv.is_a? CSV::Table
+    return @errors = {'General' => t('.not_row')} unless csv.first.is_a? CSV::Row
 
     # Check that headers have only existing accounting_types
     unknown = Device.check_headers @customer, csv.headers
-    return @errors['General'] = unknown.map do |header|
-      t '.unknown_accounting_type', name: header
-    end if unknown.present?
+    return @errors = {'General' => unknown.map do |header|
+                        t '.unknown_accounting_type', name: header
+                      end} if unknown.present?
 
     # Prepare the data Hash to apply to Devices
     data, @errors = Device.parse csv, @customer
@@ -63,6 +62,7 @@ class DevicesController < InheritedResources::Base
 
     # FIXME: Duplicated are already processed, so invalid_devices below should
     # be empty and this block of code not needed.
+    @errors = {}
     number_conditions = []
     updated_devices.each do |number, device|
       device.assign_attributes(data[number])
