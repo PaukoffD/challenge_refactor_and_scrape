@@ -384,7 +384,7 @@ describe DevicesController, type: :controller do
         post :import, {customer_id: customer.id, import_file: file}, valid_session
         expect(assigns(:errors)['General'].size).to satisfy{|v| v > 1}
       end
-    end
+    end   # when the csv data file has a column for AccountingCategory with unexisting AccountingType
 
     context 'with a mminimal set of fields' do
       let(:file) {fixture_file_upload '/minimal.csv'}
@@ -476,10 +476,6 @@ describe DevicesController, type: :controller do
 
     context 'when another customer has the device with the same number' do
       let(:file) {fixture_file_upload '/minimal.csv'}
-      let(:another_customer) {create :customer}
-      let(:another_type) {create :accounting_type, customer: another_customer}
-      let(:another_category) {create :accounting_category, accounting_type: another_type}
-      let(:another_account) {create :business_account, customer: another_customer}
       let(:status) {'active'}
 
       before :each do
@@ -488,8 +484,7 @@ describe DevicesController, type: :controller do
         ['Tablet', 'iPhone', 'Cell Phone'].each do |name|
           DeviceMake.find_or_create_by name: name
         end
-        create :device, customer: another_customer, number: '4038283663',
-            business_account: another_account, status: status
+        create :device, number: '4038283663', status: status
       end
 
       it 'at the beginning has one Device' do
