@@ -18,38 +18,33 @@ class DevicesController < InheritedResources::Base
 
     return unless request.post?
 
-    # We need this in a string since we parse it twice and Ruby will
-    # automatically close and GC it if we don't
+    @errors = {}
     import_file = params[:import_file]
     return flash[:error] = 'Please upload a file to be imported' if import_file.blank?
+    clear_existing_data = params[:clear_existing_data]
+
+    # We need this in a string since we parse it twice and Ruby will
+    # automatically close and GC it if we don't
     contents = import_file.tempfile.read.encode(invalid: :replace, replace: '')
+    csv = CSV.parse(contents, headers: true, encoding: 'UTF-8')
+    return @errors['General'] = t('.not_csv') unless csv.is_a? CSV::Table
+    return @errors['General'] = t('.not_row') unless csv.first.is_a? CSV::Row
 
-    @errors = {}
     lookups = Device.lookups @customer
-    logger.debug "DevicesController@#{__LINE__}#import #{lookups.inspect}" if logger.debug?
 
-    # Check that input file has only existing accounting_categories names
-    begin
-      CSV.parse(contents, headers: true, encoding: 'UTF-8').each do |row|
-        row.headers.each do |header|
-          if header =~ /accounting_categories\[([^\]]+)\]/
-            unless lookups.key?(header)
-              raise "'#{$1}' is not a valid accounting type"
-            end
-          end
-        end
-        break
-      end
-    rescue => e
-      @errors['General'] = [e.message]
-    end
-
-    return if @errors.present?
+    # Check that headers have only existing accounting_types
+    unknown = csv.headers.select do |header|
+      header =~ /accounting_categories\[/
+    end - lookups.keys
+    @errors['General'] = unknown.map do |header|
+      header.match(/accounting_categories\[(.*?)(\]|$)/)
+      "'#{$1}' is not a valid accounting type"
+    end and return if unknown.present?
 
     # Prepare the data Hash to apply to Devices
     data = {}
     begin
-      CSV.parse(contents, headers: true, encoding: 'UTF-8').each_with_index do |row, index|
+      csv.each_with_index do |row, index|
         accounting_categories = []
         row_data = row.to_hash.merge(customer_id: @customer.id)
         logger.debug "DevicesController@#{__LINE__}#import #{row_data.inspect}" if logger.debug?
@@ -117,7 +112,7 @@ class DevicesController < InheritedResources::Base
     @customer.devices.each do |device|
       if data.has_key?(device.number)
         updated_devices[device.number] = device
-      elsif params[:clear_existing_data]
+      elsif clear_existing_data
         removed_devices << device
       end
     end
@@ -152,7 +147,7 @@ class DevicesController < InheritedResources::Base
           end
         end
 
-        if params[:clear_existing_data]
+        if clear_existing_data
           removed_devices.each{ |device| device.delete }
         end
 

@@ -243,8 +243,17 @@ describe DevicesController, type: :controller do
     let(:file)  {fixture_file_upload '/one_deivce.csv'}
 
     it 'calls Device.lookups with customer' do
-      expect(Device).to receive(:lookups).with(customer)
+      expect(Device).to receive(:lookups).with(customer).and_return({})
       post :import, {customer_id: customer.id, import_file: file}, valid_session
+    end
+
+    context 'with file without records' do
+      let(:file)  {fixture_file_upload '/only_header.csv'}
+
+      it 'generates error that the file is empty' do
+        post :import, {customer_id: customer.id, import_file: file}, valid_session
+        expect(assigns(:errors)['General']).to eq 'There is no data in the file'
+      end
     end
 
     context 'with the csv data file porvided' do
@@ -337,7 +346,9 @@ describe DevicesController, type: :controller do
         post :import, {customer_id: customer.id, import_file: file}, valid_session
         expect(response).to render_template("import")
         expect(assigns :errors).to be_present
-        expect(assigns(:errors)['General']).to be_present
+        expect(assigns(:errors)['General'].size).to be 2
+        expect(assigns(:errors)['General']).to include "'Reports To' is not a valid accounting type"
+
       end
 
       it 'lists all the cases' do

@@ -56,6 +56,8 @@ en:
       general_errors:
         one: 'General error'
         other: 'General errors'
+      not_scv: 'The file is not a valid CSV file'
+      not_row: 'There is no data in the file'
       title: 'Importing devices for the customer %{name}'
       upload: 'Upload and import file'
       warning:

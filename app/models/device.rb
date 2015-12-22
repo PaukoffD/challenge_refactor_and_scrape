@@ -83,6 +83,7 @@ class Device < ActiveRecord::Base
     def lookups(customer)
       @@lookups ||= {}
       lookups = (@@lookups[customer.to_param] ||= {}.with_indifferent_access)
+      return lookups if lookups.present?
 
       import_export_columns.each do |attr|
         if attr =~ /^(\w+)_id/
