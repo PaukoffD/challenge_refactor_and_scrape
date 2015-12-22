@@ -37,6 +37,7 @@
 #
 
 require 'rails_helper'
+require 'csv'
 
 describe Device, type: :model do
 
@@ -210,6 +211,113 @@ describe Device, type: :model do
         end
       end   # when headrs contain unknown AccountingType for accounting_category
     end   # .check_headers
-  end   # class
 
+    describe '.parse' do
+      let(:csv) {CSV.open fixture_path + '/minimal.csv', headers: true}
+      before :each do
+        # to create
+        accounting_category
+        business_account
+        device_make
+        device_model
+        carrier_base
+        ['Tablet', 'iPhone', 'Cell Phone'].each do |name|
+          DeviceMake.find_or_create_by name: name
+        end
+      end   # before :each
+
+      it 'reads the csv file and returns a Hash of attributes for the Device and a Hash for errors' do
+        result, errors = Device.parse csv, customer
+        expect(result).to be_a_kind_of Hash
+        expect(errors).to be_a_kind_of Hash
+        expect(result.keys.sort).to eq %w[
+          4038269268
+          4038283663
+          7808161381
+        ]
+        expect(errors).to be_empty
+      end
+
+      context 'with missing header in scv' do
+        let(:csv) {CSV.open fixture_path + '/missing_header.csv', headers: true}
+
+        it 'moves data to the result and adds nothing to errors' do
+          result, errors = Device.parse csv, customer
+          expect(result.size).to be 1
+          expect(errors.size).to be 0
+        end
+      end
+
+      context 'when a line in the csv file has not a device number in one line' do
+        let(:csv) {CSV.open fixture_path + '/minimal_wo_number.csv', headers: true}
+
+        it 'adds the General error to the errors' do
+          result, errors = Device.parse csv, customer
+          expect(errors.size).to be 1
+          expect(errors['General'].size).to be 1
+          expect(errors['General']).to eq [[:no_number, 2]]
+        end
+      end   # when a line in the csv file has not a device number in one line
+
+      context 'when a device number is repeated on a line' do
+        let(:csv) {CSV.open fixture_path + '/minimal_with_repeated_number.csv', headers: true}
+
+        it 'adds the error for this device number to the errors' do
+          result, errors = Device.parse csv, customer
+          expect(errors.size).to be 1
+          expect(errors['4038283663'].size).to be 1
+          expect(errors['4038283663']).to eq [[:duplicate, 3]]
+        end
+      end   # when a device number is repeated on a line
+
+      context 'with an unknown accounting_category' do
+        let(:csv) {CSV.open fixture_path + '/with_new_accounting_category.csv', headers: true}
+
+        it 'adds the error for this device number to the @errors' do
+          result, errors = Device.parse csv, customer
+          expect(errors.size).to be 1
+          expect(errors['4038283663'].size).to be 1
+          expect(errors['4038283663'])
+              .to eq [[:unknown_accounting_category, 2, "Cost Center", "10010.8351"]]
+        end
+      end   # with an unknown accounting_category
+
+      context 'when another customer has a device with the same number' do
+        let(:status) {'active'}
+
+        before :each do
+          create :device, number: '4038283663', status: status
+        end
+
+        context 'and its status is "cancelled"' do
+          let(:status) {'cancelled'}
+
+          it 'adds nothing to errors' do
+            result, errors = Device.parse csv, customer
+            expect(errors.size).to be 0
+          end
+        end   # and its status is "cancelled
+
+        context 'and its status is not "cancelled"' do
+          context 'and the status of the new one is not "cancelled"' do
+            it 'adds the error for this device number to the errors' do
+              result, errors = Device.parse csv, customer
+              expect(errors.size).to be 1
+              expect(errors['4038283663'].size).to be 1
+              expect(errors['4038283663']).to eq [[:existing_device]]
+            end
+          end   # and the status of the new one is not "cancelled
+
+          context 'and the status of the new one is "cancelled"' do
+            let(:csv) {CSV.open fixture_path + '/minimal_with_cancelled.csv', headers: true}
+
+            it 'adds nothing to errors' do
+              result, errors = Device.parse csv, customer
+              expect(errors.size).to be 0
+            end
+          end   # and the status of the new one is "cancelled
+        end   # and its status is not "cancelled
+      end   # when another customer has the device with the same number
+    end   # .parse
+  end   # class
 end

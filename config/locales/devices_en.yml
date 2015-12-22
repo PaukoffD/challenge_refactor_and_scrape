@@ -50,15 +50,19 @@ en:
       device_errors:
         one: 'Error for the device # %{number}'
         other: 'Errors for the device # %{number}'
+      duplicate: "There is a duplicate entry at the line %{line}"
       errors:
         one: 'An error was issued'
         other: '%{count} errors were issued'
+      existing_device: "Duplicate number. The number can only be processed once, please ensure it's on the active account number."
       general_errors:
         one: 'General error'
         other: 'General errors'
+      no_number: "An entry at the line %{line} has no number"
       not_scv: 'The file is not a valid CSV file'
       not_row: 'There is no data in the file'
       title: 'Importing devices for the customer %{name}'
+      unknown_accounting_category: 'New "%{value1}" code: "%{value2}" at the line %{line}'
       unknown_accounting_type: "'%{name}' is not a valid accounting type"
       upload: 'Upload and import file'
       warning:

@@ -125,5 +125,73 @@ class Device < ActiveRecord::Base
         header.match(/accounting_categories\[(.*?)(\]|$)/)[1]
       end
     end   # check_headers
+
+    def parse(csv, customer)
+      data = {}
+      errors  = {}
+      lookups = self.lookups customer
+      index = 1
+      csv.each do |row|
+        index += 1
+        accounting_categories = []
+        row_data = row.to_hash.merge(customer_id: customer.to_param)
+        logger.debug "Device@#{__LINE__}#parse #{row_data.inspect}" if logger.debug?
+
+        # Check validity of the number
+        # Hardcode the number, just to make sure we don't run into issues
+        number = row_data['number'] = row_data['number'].try :gsub, /\D+/, ''
+        (errors['General'] ||= []) << [:no_number, index] and next if number.blank?
+        (errors[number] ||= []) << [:duplicate, index] and next if data[number]
+
+        # Process string assingments
+        row_data = Hash[row_data.map{|k, v| [k, v =~ /^="(.*?)"/ ? $1 : v] }]
+
+        # Replace the values with the ids from lookups and Boolean
+        row_data.keys.each do |attr|
+          next if attr.blank?
+          value = row_data[attr]
+          if lookups.key? attr
+            if attr =~ /accounting_categories/
+              accounting_type = attr.gsub(/accounting_categories\[(.*?)\]/, '\1')
+              val = lookups[attr][value.to_s.strip]
+              if !val
+                # Why not to create a new accounting_type?
+                (errors[number] ||= []) <<
+                    [:unknown_accounting_category, index, accounting_type, value]
+              else
+                accounting_categories << val
+              end
+              row_data.delete(attr)
+            else
+              row_data[attr] = lookups[attr][value]
+            end
+          end   # if lookups.key? attr
+          # Boolean values
+          if value == 't' || value == 'f'
+            # This is postgres-specific
+            row_data[attr] = (value == 't')
+          end
+        end
+        row_data['accounting_category_ids'] = accounting_categories if accounting_categories.present?
+        # Are there any?
+        data[number] = row_data
+      end
+
+      # Duplicated_numbers
+      where(number: data.keys)
+        .where.not(customer_id: customer.to_param)
+        .where.not(status: 'cancelled')
+      .each do |device|
+        if data[device.number]['status'] != 'cancelled'
+          (errors[device.number] ||= []) << [:existing_device]
+        end
+      end
+
+      logger.debug "Device@#{__LINE__}#parse #{errors.inspect}" if logger.debug? and errors.present?
+      [data, errors]
+    rescue => e
+      logger.info "Device@#{__LINE__}#parse #{e.message.inspect}\n#{e.backtrace.join "\n"}"
+      [data, {errors: {'General' => e.message}}]
+    end   # parse
   end   # class << self
 end

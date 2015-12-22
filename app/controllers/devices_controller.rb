@@ -36,71 +36,16 @@ class DevicesController < InheritedResources::Base
       t '.unknown_accounting_type', name: header
     end if unknown.present?
 
-    lookups = Device.lookups @customer
     # Prepare the data Hash to apply to Devices
-    data = {}
-    begin
-      csv.each_with_index do |row, index|
-        accounting_categories = []
-        row_data = row.to_hash.merge(customer_id: @customer.id)
-        logger.debug "DevicesController@#{__LINE__}#import #{row_data.inspect}" if logger.debug?
-
-        # Check validity of the number
-        # Hardcode the number, just to make sure we don't run into issues
-        number = row_data['number'] = row_data['number'].try :gsub, /\D+/, ''
-        (@errors['General'] ||= []) << "An entry around line #{index} has no number" and next if number.blank?
-        (@errors[number] ||= []) << "Is a duplicate entry" and next if data[number]
-
-        # Process string assingments
-        row_data = Hash[row_data.map{|k, v| [k, v =~ /^="(.*?)"/ ? $1 : v] }]
-
-        # Replace the values with the ids from lookups and Boolean
-        row_data.keys.each do |attr|
-          value = row_data[attr]
-          if lookups.key? attr
-            if attr =~ /accounting_categories/
-              accounting_type = attr.gsub(/accounting_categories\[(.*?)\]/, '\1')
-              val = lookups[attr][value.to_s.strip]
-              if !val
-                # Why not to create a new accounting_type?
-                (@errors[number] ||= []) << "New \"#{accounting_type}\" code: \"#{value.to_s.strip}\""
-              else
-                accounting_categories << val
-              end
-              row_data.delete(attr)
-            else
-              row_data[attr] = lookups[attr][value]
-            end
-          end   # if lookups.key? attr
-          # Boolean values
-          if value == 't' || value == 'f'
-            # This is postgres-specific
-            row_data[attr] = (value == 't')
-          end
-        end
-        row_data['accounting_category_ids'] = accounting_categories if accounting_categories.present?
-        # Are there any?
-        data[number] = row_data.select{|attr, value| attr }
-      end
-    rescue => e
-      logger.info "DevicesController@#{__LINE__}#import #{e.message}\n#{e.backtrace.join "\n"}"
-      @errors['General'] = [e.message]
-    end
-    logger.debug "DevicesController@#{__LINE__}#import #{data.inspect}" if logger.debug?
-
-    # Duplicated_numbers
-    Device.where(number: data.keys)
-      .where.not(customer_id: @customer.id)
-      .where.not(status: 'cancelled')
-    .each do |device|
-      if data[device.number]['status'] != 'cancelled'
-        (@errors[device.number] ||= []) << "Duplicate number. The number can only be processed once, please ensure it's on the active account number."
-      end
-    end
+    data, @errors = Device.parse csv, @customer
 
     # Shortcut here to get basic errors out of the way
     logger.debug "DevicesController@#{__LINE__}#import #{@errors.inspect}" if logger.debug?
-    return if @errors.present?
+    return @errors.values.each do |error|
+      error.map! do |code, line, value1, value2|
+        t ".#{code}", line: line, value1: value1, value2: value2
+      end
+    end if @errors.present?
 
     # Form the lists of devices to be updated and removed
     updated_devices = {}
