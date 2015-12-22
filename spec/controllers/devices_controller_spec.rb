@@ -386,6 +386,29 @@ describe DevicesController, type: :controller do
       end
     end   # when the csv data file has a column for AccountingCategory with unexisting AccountingType
 
+    context 'with a required attribute missing' do
+      let(:file) {fixture_file_upload '/with_missing_attribute.csv'}
+
+      before :each do
+        business_account    # to create
+        ['Tablet', 'iPhone', 'Cell Phone'].each do |name|
+          DeviceMake.find_or_create_by name: name
+        end
+      end
+
+      it 'does not store the device' do
+        expect do
+          post :import, {customer_id: customer.id, import_file: file}, valid_session
+        end.not_to change(Device, :count)
+      end
+
+      it 'adds the error for this device number to the @errors' do
+        post :import, {customer_id: customer.id, import_file: file}, valid_session
+        expect(assigns(:errors).size).to be 1
+        expect(assigns(:errors)['4038283663']).to eq ["Device make can't be blank"]
+      end
+    end   # with a required attribute missing
+
     context 'with a mminimal set of fields' do
       let(:file) {fixture_file_upload '/minimal.csv'}
 
