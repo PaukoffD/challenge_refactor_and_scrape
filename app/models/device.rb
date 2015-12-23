@@ -34,6 +34,8 @@
 #  asset_tag                   :string
 #  created_at                  :datetime         not null
 #  updated_at                  :datetime         not null
+#  created_by                  :string
+#  source                      :string
 #
 
 # Model Device
@@ -57,7 +59,7 @@ class Device < ActiveRecord::Base
   end
 
   def track!(attributes = {})
-    # FIXME: add attributes processing
+    assign_attributes attributes
     yield
   end
 
@@ -65,6 +67,7 @@ class Device < ActiveRecord::Base
     # Returns the list of attributes that can be seen/updted from outside
     def import_export_columns
       blacklist = %w{
+        created_by
         customer_id
         id
         heartbeat
@@ -75,6 +78,7 @@ class Device < ActiveRecord::Base
         deferred
         deployed_until
         device_model_mapping_id
+        source
         transfer_token
         carrier_rate_plan_id
       }

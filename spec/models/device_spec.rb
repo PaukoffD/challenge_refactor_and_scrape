@@ -34,6 +34,8 @@
 #  asset_tag                   :string
 #  created_at                  :datetime         not null
 #  updated_at                  :datetime         not null
+#  created_by                  :string
+#  source                      :string
 #
 
 require 'rails_helper'
@@ -76,11 +78,13 @@ describe Device, type: :model do
 
   describe '#track!' do
     it 'shoud call the block'do
-      expect { |b| subject.track!(&b) }.to yield_with_no_args
+      expect {|b| subject.track!(&b)}.to yield_with_no_args
     end
 
     it 'assigns attributes given' do
-      skip 'FIXME: It is needed to add necessary attributes'
+      expect do
+        subject.track! source: 'new_source' do end
+      end.to change(subject, :source).to 'new_source'
     end
   end   #track!
 

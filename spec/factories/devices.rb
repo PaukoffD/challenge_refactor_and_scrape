@@ -34,6 +34,8 @@
 #  asset_tag                   :string
 #  created_at                  :datetime         not null
 #  updated_at                  :datetime         not null
+#  created_by                  :string
+#  source                      :string
 #
 
 FactoryGirl.define do
@@ -57,6 +59,8 @@ FactoryGirl.define do
     inactive false
     in_suspension false
     is_roaming true
+    sequence(:created_by) {|n| "Created by ##{n}"}
+    sequence(:source) {|n| "Source ##{n}"}
     additional_data_old "MyString"
     added_features "MyString"
     current_rate_plan "MyString"

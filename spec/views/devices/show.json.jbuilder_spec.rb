@@ -38,6 +38,8 @@ describe "devices/show.json.jbuilder", type: :view do
     asset_tag
     created_at
     updated_at
+    created_by
+    source
   ]
 
   it "renders the following attributes of device: #{attributes.join(', ')} as json" do

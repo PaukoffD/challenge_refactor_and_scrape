@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151219180152) do
+ActiveRecord::Schema.define(version: 20151223222113) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -104,6 +104,8 @@ ActiveRecord::Schema.define(version: 20151219180152) do
     t.string   "asset_tag"
     t.datetime "created_at",                  null: false
     t.datetime "updated_at",                  null: false
+    t.string   "created_by"
+    t.string   "source"
   end
 
   add_index "devices", ["business_account_id"], name: "index_devices_on_business_account_id", using: :btree

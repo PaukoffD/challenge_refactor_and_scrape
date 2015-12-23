@@ -37,5 +37,7 @@ describe "devices/show", type: :view do
     assert_select 'dl>dd', text: Regexp.new(@device.number_for_forwarding.to_s)
     assert_select 'dl>dd', text: Regexp.new(@device.call_forwarding_status.to_s)
     assert_select 'dl>dd', text: Regexp.new(@device.asset_tag.to_s)
+    assert_select 'dl>dd', text: Regexp.new(@device.created_by.to_s)
+    assert_select 'dl>dd', text: Regexp.new(@device.source.to_s)
   end
 end
