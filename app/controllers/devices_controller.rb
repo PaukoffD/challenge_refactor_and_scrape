@@ -35,72 +35,25 @@ class DevicesController < InheritedResources::Base
                         t '.unknown_accounting_type', name: header
                       end} if unknown.present?
 
-    # Prepare the data Hash to apply to Devices
-    data, @errors = Device.parse csv, @customer
-
-    # Shortcut here to get basic errors out of the way
-    logger.debug "DevicesController@#{__LINE__}#import #{@errors.inspect}" if logger.debug?
-    return @errors.values.each do |error|
-      error.map! do |code, line, value1, value2|
-        if code.is_a? Symbol
-          t ".#{code}", line: line, value1: value1, value2: value2
-        else
-          code
-        end
-      end
-    end if @errors.present?
-
-    # Form the lists of devices to be updated and removed
-    updated_devices = {}
-    removed_devices = []
-    @customer.devices.each do |device|
-      if data.has_key?(device.number)
-        updated_devices[device.number] = device
-      elsif clear_existing_data
-        removed_devices << device
-      end
-    end
-    data.each do |number, attributes|
-      updated_devices[number] = Device.new unless updated_devices[number]
-    end
-
-    # FIXME: Duplicated are already processed, so invalid_devices below should
-    # be empty and this block of code not needed.
-    @errors = {}
-    number_conditions = []
-    updated_devices.each do |number, device|
-      device.assign_attributes(data[number])
-      unless device.valid?
-        logger.debug "DevicesController@#{__LINE__}#import #{data[number].inspect} #{device.errors.messages.inspect}" if logger.debug?
-        @errors[number] = device.errors.full_messages
-      end
-      number_conditions << "(number = '#{number}' AND status <> 'cancelled')" unless device.cancelled?
-    end
-    if number_conditions.size.nonzero?
-      invalid_devices = Device.unscoped.where("(#{number_conditions.join(' OR ')}) AND customer_id != ?", @customer.id)
-      invalid_devices.each do |device|
-        (@errors[device.number] ||= []) << "Already in the system as an active number"
-      end
-    end
-
-    # Let us save the work
-    Device.transaction do
-      if @errors.empty?
-        updated_devices.each do |number, device|
-          device.track!(created_by: current_user, source: "Bulk Import") do
-            device.save(validate: false)
+    result = Device.import csv, @customer, clear_existing_data, current_user
+    if result.is_a? Hash
+      @errors = result
+      @errors.values.each do |error|
+        error.map! do |code, line, value1, value2|
+          if code.is_a? Symbol
+            t ".#{code}", line: line, value1: value1, value2: value2
+          else
+            code
           end
         end
-
-        if clear_existing_data
-          removed_devices.each{ |device| device.delete }
-        end
-
-        flash[:notice] = "Import successfully completed. #{updated_devices.length} lines updated/added. #{removed_devices.length} lines removed."
-      else
-        raise ActiveRecord::Rollback
       end
-    end   # Device.transaction
+    else
+      flash[:notice] = [
+        t('.success'),
+        t('.updated', count: result.first),
+        t('.removed', count: result.second)
+      ].join(' ')
+    end
   end   # import
 
   private

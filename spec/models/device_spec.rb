@@ -319,5 +319,118 @@ describe Device, type: :model do
         end   # and its status is not "cancelled
       end   # when another customer has the device with the same number
     end   # .parse
+
+    describe '.import' do
+      let(:current_user) {'current_user'}   # FIXME: here should be a real object of User returned
+      let(:csv) {CSV.open fixture_path + '/minimal.csv', headers: true}
+      let(:clear) {}
+      let(:parsed) {[data, errors]}
+      let(:data) {{'0' => {}}}
+
+      describe 'calls .parse and if errors are present' do
+        let(:errors) {{'General' => 'message'}}
+
+        it 'returns them and does not process further' do
+          expect(Device).to receive(:parse).with(csv, customer).and_return(parsed)
+          expect(Device).not_to receive(:transaction)
+          expect(Device.import csv, customer, clear, current_user).to eq 'General' => 'message'
+        end
+      end   # calls .parse
+
+      context 'when .parse returns no errors and valid atributes for NEW devices' do
+        let(:errors) {{}}
+        let(:data) do   # NOTE: Here must be present all required attributes
+          {
+            '101' => {
+                      customer_id: customer.to_param,
+                      username: 'Guy 1',
+                      number: '101',
+                      device_make_id: DeviceMake.first.to_param,
+                      business_account_id: BusinessAccount.first.to_param,
+                      status: 'active'
+                      },
+            '102' => {
+                      customer_id: customer.to_param,
+                      username: 'Guy 2',
+                      number: '101',
+                      device_make_id: DeviceMake.first.to_param,
+                      business_account_id: BusinessAccount.first.to_param,
+                      status: 'active'
+                      },
+          }
+        end
+
+        before :each do
+          create :device, customer: customer, business_account: business_account
+          allow(Device).to receive(:parse).and_return(parsed)
+        end
+
+        context 'without clear_existing_data' do
+          it 'adds new Devices' do
+            expect do
+              Device.import csv, customer, clear, current_user
+            end.to change(Device, :count).by 2
+          end
+
+          it 'reports about it in the array returned' do
+            expect(Device.import csv, customer, clear, current_user).to eq [2, 0]
+          end
+        end   # without clear_existing_data
+
+        context 'with clear_existing_data' do
+          let(:clear) {true}
+
+          it 'adds new Devices and removes old' do
+            expect do
+              Device.import csv, customer, clear, current_user
+            end.to change(Device, :count).by 1
+          end
+
+          it 'reports about it in the array returned' do
+            expect(Device.import csv, customer, clear, current_user).to eq [2, 1]
+          end
+        end   # without clear_existing_data
+
+      end   #when .parse returns no errors and valid atributes for NEW devices
+
+      context 'when .parse returns no errors and invalid atribute for any device' do
+        let(:errors) {{}}
+        let(:data) do   # NOTE: Here must be present all required attributes
+          {
+            '101' => {
+                      customer_id: customer.to_param,
+                      username: 'Guy 1',
+                      number: '101',
+                      business_account_id: BusinessAccount.first.to_param,
+                      status: 'active'
+                      },
+            '102' => {
+                      customer_id: customer.to_param,
+                      username: 'Guy 2',
+                      number: '101',
+                      device_make_id: DeviceMake.first.to_param,
+                      business_account_id: BusinessAccount.first.to_param,
+                      status: 'active'
+                      },
+          }
+        end
+
+        before :each do
+          create :device, customer: customer, business_account: business_account
+          allow(Device).to receive(:parse).and_return(parsed)
+        end
+
+        it 'does not add new Devices nor removes old' do
+          expect do
+            Device.import csv, customer, clear, current_user
+          end.not_to change(Device, :count)
+        end
+
+        it 'returns errors Hash' do
+          expect(Device.import csv, customer, clear, current_user)
+              .to eq "101" => ["Device make can't be blank"]
+        end
+      end   # when .parse returns no errors and invalid atribute for any device
+    end   # .import
   end   # class
 end

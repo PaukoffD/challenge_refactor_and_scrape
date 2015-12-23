@@ -193,5 +193,50 @@ class Device < ActiveRecord::Base
       logger.info "Device@#{__LINE__}#parse #{e.message.inspect}\n#{e.backtrace.join "\n"}"
       [data, {errors: {'General' => e.message}}]
     end   # parse
+
+    def import(csv, customer, clear_existing_data, current_user)
+      data, errors = parse csv, customer
+      return errors if errors.present?
+
+      # Form the lists of devices to be updated and removed
+      updated_devices = {}
+      removed_devices = []
+      customer.devices.each do |device|
+        if data.has_key?(device.number)
+          updated_devices[device.number] = device
+        elsif clear_existing_data
+          removed_devices << device
+        end
+      end
+      data.each do |number, attributes|
+        updated_devices[number] = Device.new unless updated_devices[number]
+      end
+
+      # Assign attributes and check validity
+      updated_devices.each do |number, device|
+        device.assign_attributes(data[number])
+        unless device.valid?
+          logger.debug "Device@#{__LINE__}#import #{data[number].inspect} #{device.errors.messages.inspect}" if logger.debug?
+          errors[number] = device.errors.full_messages
+        end
+      end
+
+      return errors if errors.present?
+
+      # Let us save the work
+      transaction do
+        updated_devices.each do |number, device|
+          device.track!(created_by: current_user, source: "Bulk Import") do
+            device.save(validate: false)
+          end
+        end
+
+        if clear_existing_data
+          removed_devices.each{ |device| device.delete }
+        end
+
+      end   # Device.transaction
+      [updated_devices.size, removed_devices.size]
+    end   # import
   end   # class << self
 end
