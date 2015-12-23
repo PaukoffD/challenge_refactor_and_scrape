@@ -56,12 +56,13 @@ class Device < ActiveRecord::Base
     status == 'cancelled'
   end
 
-  def track!(attributtes = {})
-    # FIXME: add attributtes processing
+  def track!(attributes = {})
+    # FIXME: add attributes processing
     yield
   end
 
   class << self
+    # Returns the list of attributes that can be seen/updted from outside
     def import_export_columns
       blacklist = %w{
         customer_id
@@ -80,6 +81,8 @@ class Device < ActiveRecord::Base
       (column_names - blacklist).reject{ |c| c =~ /_at$/ } # Reject timestamps
     end   # import_export_columns
 
+    # Creates a Hash for the given customer that keeps the data of the customer
+    # reflections so that we can quickly find the id by name
     def lookups(customer)
       @@lookups ||= {}
       lookups = (@@lookups[customer.to_param] ||= {}.with_indifferent_access)
@@ -103,11 +106,11 @@ class Device < ActiveRecord::Base
                 else
                   lookups[attr] = Hash[reflection.klass.pluck(accessor, :id)]
                 end
-              end
-            end
-          end
-        end
-      end
+              end   # if reflection.foreign_key == attr
+            end   # reflections.each
+          end   # case
+        end   # if attr =~ /^(\w+)_id/
+      end   # import_export_columns.each
       customer.accounting_types.each do |acc_type|
         lookups["accounting_categories[#{acc_type.name}]"] =
             acc_type.accounting_categories.pluck(:name, :id)
@@ -118,6 +121,9 @@ class Device < ActiveRecord::Base
       lookups
     end   # lookups
 
+    # Looks up the headers of the kind 'accounting_categories[accounting_type]' and
+    # the accounting_types met that do not belong to the customer.
+    # So, if the list is empty, everything is OK.
     def check_headers(customer, headers)
       (headers.select do |header|
         header =~ /accounting_categories\[/
@@ -126,6 +132,15 @@ class Device < ActiveRecord::Base
       end
     end   # check_headers
 
+    # Takes a CSV object and creates the Hash of attributes Hashes for each
+    # Device number met in the CSV where the keys are the device numbers.
+    # Attributes Hases are ready to be used in assign_attributes method.
+    #
+    # Additionally some checks are made and if needed errors are generated.
+    # The errors are placed in Hash with keys being device numbers. Unless
+    # we can not tell. In the latter case the key 'General' is used.
+    #
+    # The method returns pair of the Hashes.
     def parse(csv, customer)
       data = {}
       errors  = {}
@@ -194,6 +209,17 @@ class Device < ActiveRecord::Base
       [data, {errors: {'General' => e.message}}]
     end   # parse
 
+    # Takes a CSV object, parses it and if no errors are met and
+    # all the Device attributes produce the valid Devices, updates
+    # and/or adds new ones to the customer devices list.
+    # If clear_existing_data is not falsy the customer Devices
+    # that did not apper in the CSV will be discarded.
+    #
+    # Each Device touched will keep the reference to the
+    # current_user that initialized the operation.
+    #
+    # Returns number of updated/added rerords and number of deleted ones if
+    # no errors took place, otherwise returns the Hash of errors.
     def import(csv, customer, clear_existing_data, current_user)
       data, errors = parse csv, customer
       return errors if errors.present?
@@ -215,10 +241,7 @@ class Device < ActiveRecord::Base
       # Assign attributes and check validity
       updated_devices.each do |number, device|
         device.assign_attributes(data[number])
-        unless device.valid?
-          logger.debug "Device@#{__LINE__}#import #{data[number].inspect} #{device.errors.messages.inspect}" if logger.debug?
-          errors[number] = device.errors.full_messages
-        end
+        errors[number] = device.errors.full_messages unless device.valid?
       end
 
       return errors if errors.present?

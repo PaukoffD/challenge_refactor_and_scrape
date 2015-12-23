@@ -31,22 +31,12 @@ class DevicesController < InheritedResources::Base
 
     # Check that headers have only existing accounting_types
     unknown = Device.check_headers @customer, csv.headers
-    return @errors = {'General' => unknown.map do |header|
-                        t '.unknown_accounting_type', name: header
-                      end} if unknown.present?
+    return @errors = {'General' => missing_types_errors(unknown)} if unknown.present?
 
     result = Device.import csv, @customer, clear_existing_data, current_user
     if result.is_a? Hash
       @errors = result
-      @errors.values.each do |error|
-        error.map! do |code, line, value1, value2|
-          if code.is_a? Symbol
-            t ".#{code}", line: line, value1: value1, value2: value2
-          else
-            code
-          end
-        end
-      end
+      @errors.values.each {|error| translate_error!(error)}
     else
       flash[:notice] = [
         t('.success'),
@@ -60,6 +50,25 @@ class DevicesController < InheritedResources::Base
 
   def device_params
     params.require(:device).permit(:number, :customer_id, :device_make_id, :device_model_id, :status, :imei_number, :sim_number, :model, :carrier_base_id, :business_account_id, :contract_expiry_date, :username, :location, :email, :employee_number, :contact_id, :inactive, :in_suspension, :is_roaming, :additional_data_old, :added_features, :current_rate_plan, :data_usage_status, :transfer_to_personal_status, :apple_warranty, :eligibility_date, :number_for_forwarding, :call_forwarding_status, :asset_tag)
+  end
+
+  # For erorr that is an Arrray with leading Symbol substitutes
+  # it with the corresponding translation.
+  def translate_error!(error)
+    error.map! do |code, line, value1, value2|
+      if code.is_a? Symbol
+        t ".#{code}", line: line, value1: value1, value2: value2
+      else
+        code
+      end
+    end
+  end
+
+  # Tranlates the given list into the corresponding eroor messages
+  def missing_types_errors(unknown)
+    unknown.map do |header|
+      t '.unknown_accounting_type', name: header
+    end
   end
 end
 
