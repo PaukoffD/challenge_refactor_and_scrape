@@ -242,6 +242,24 @@ describe DevicesController, type: :controller do
     let(:business_account) {create :business_account, customer: customer, name: '01074132'}
     let(:file)  {fixture_file_upload '/one_deivce.csv'}
 
+    context 'without parameter :import_file' do
+      it 'renders :import template with flash :error set and empty @errors' do
+        post :import, {customer_id: customer.id}, valid_session
+        expect(response).to render_template("import")
+        expect(controller.flash.keys).to eq ['error']
+        expect(assigns :errors).to be_blank
+      end
+    end   # without parameter :import_file
+
+    context 'with file without records' do
+      let(:file)  {fixture_file_upload '/only_header.csv'}
+
+      it 'generates error that the file is empty' do
+        post :import, {customer_id: customer.id, import_file: file}, valid_session
+        expect(assigns(:errors)['General']).to eq 'There is no data in the file'
+      end
+    end
+
     it 'calls Device.lookups with customer' do
       expect(Device).to receive(:lookups).twice.with(customer).and_return({})
       post :import, {customer_id: customer.id, import_file: file}, valid_session
@@ -279,15 +297,33 @@ describe DevicesController, type: :controller do
       end   # when the result has elements
     end   # calls Device.check_headers
 
-    context 'with file without records' do
-      let(:file)  {fixture_file_upload '/only_header.csv'}
-
-      it 'generates error that the file is empty' do
-        post :import, {customer_id: customer.id, import_file: file}, valid_session
-        expect(assigns(:errors)['General']).to eq 'There is no data in the file'
+    describe 'calls Device.import with csv, customer, clear_existing_data and current_user' do
+      it 'passing data' do
+        allow(controller).to receive(:current_user).and_return('CU')
+        expect(Device).to receive(:import)
+          .with(instance_of(CSV::Table), customer, 'remove', 'CU')
+          .and_return [1, 1]
+        post :import,
+            {customer_id: customer.id, import_file: file, clear_existing_data: 'remove'},
+            valid_session
       end
-    end
 
+      it 'when an Array is returned fille the flash' do
+        allow(Device).to receive(:import).and_return [2, 1]
+        post :import, {customer_id: customer.id, import_file: file}, valid_session
+        expect(controller.flash[:notice]).to eq 'Import successfully completed. 2 lines updated/added. One line removed.'
+      end
+
+      it 'when a Hash is returned fills @errors' do
+        allow(Device).to receive(:import).and_return '12' => ['Text message'],
+          '23' => [[:unknown_accounting_category, 5, 'type', 'code']]
+        post :import, {customer_id: customer.id, import_file: file}, valid_session
+        expect(assigns(:errors)).to eq '12' => ['Text message'],
+            "23" => ['New "type" code: "code" at the line 5']
+      end
+    end   # calls Device.import scv, customer, clear_existing_data and current_user
+
+    # TODO: remove me
     context 'with the csv data file porvided' do
       data = {
         accountings: {
@@ -362,15 +398,7 @@ describe DevicesController, type: :controller do
       end
     end   # with the csv data file porvided
 
-    context 'without parameter :import_file' do
-      it 'renders :import template with flash :error set and empty @errors' do
-        post :import, {customer_id: customer.id}, valid_session
-        expect(response).to render_template("import")
-        expect(controller.flash.keys).to eq ['error']
-        expect(assigns :errors).to be_blank
-      end
-    end   # without parameter :import_file
-
+    # TODO: remove me
     context 'when the csv data file has a column for AccountingCategory with unexisting AccountingType' do
       let(:file) {fixture_file_upload '/task_data.csv'}
 
@@ -389,6 +417,7 @@ describe DevicesController, type: :controller do
       end
     end   # when the csv data file has a column for AccountingCategory with unexisting AccountingType
 
+    # TODO: remove me
     context 'with a required attribute missing' do
       let(:file) {fixture_file_upload '/with_missing_attribute.csv'}
 
@@ -412,6 +441,7 @@ describe DevicesController, type: :controller do
       end
     end   # with a required attribute missing
 
+    # TODO: remove me
     context 'with a mminimal set of fields' do
       let(:file) {fixture_file_upload '/minimal.csv'}
 
@@ -429,6 +459,7 @@ describe DevicesController, type: :controller do
         end.to change(Device, :count).by(3)
       end
 
+    # TODO: remove me
       context 'when a line in the csv file has not a device number in one line' do
         let(:file) {fixture_file_upload '/minimal_wo_number.csv'}
 
@@ -445,6 +476,7 @@ describe DevicesController, type: :controller do
         end
       end   # when a line in the csv file has not a device number
 
+    # TODO: remove me
       context 'when a device number is repeated on a line' do
         let(:file) {fixture_file_upload '/minimal_with_repeated_number.csv'}
 
@@ -461,6 +493,7 @@ describe DevicesController, type: :controller do
         end
       end   # when a device number is repeated on a line
 
+    # TODO: remove me
       context 'with an unknown accounting_category' do
         let(:file) {fixture_file_upload '/with_new_accounting_category.csv'}
 
@@ -478,6 +511,7 @@ describe DevicesController, type: :controller do
       end   # with an unknown accounting_category
     end   # with a mminimal set of fields
 
+    # TODO: remove me
     context 'when another customer has the device with the same number' do
       let(:file) {fixture_file_upload '/minimal.csv'}
       let(:status) {'active'}
@@ -543,6 +577,7 @@ describe DevicesController, type: :controller do
       end   # and its status is not "cancelled
     end   # when another customer has the device with the same number
 
+    # TODO: remove me
     context 'updating the data with two new devices' do
       let(:one_deivce) {fixture_file_upload '/one_deivce.csv'}
       let(:two_others) {fixture_file_upload '/two_others.csv'}
