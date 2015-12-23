@@ -10,16 +10,16 @@ class DevicesController < InheritedResources::Base
     @warnings = []
 
     if @customer.devices.count(:all) == 0
-      @warnings << 'This customer has no devices. The import file needs to have at least the following columns: number, username, business_account_id, device_make_id'
+      @warnings << t('.warning_no_devices')
     end
     if @customer.business_accounts.count(:all) == 0
-      @warnings << 'This customer does not have any business accounts.  Any device import will fail to process correctly.'
+      @warnings << t('.warning_no_accounts')
     end
 
-    return unless request.post?
+    return unless request.post?   # Old good rails v.1.0 style ;-)
 
     import_file = params[:import_file]
-    return flash[:error] = 'Please upload a file to be imported' if import_file.blank?
+    return flash[:error] = t('.please_upload') if import_file.blank?
     clear_existing_data = params[:clear_existing_data]
 
     # We need this in a string since we parse it twice and Ruby will

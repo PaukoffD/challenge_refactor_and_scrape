@@ -589,10 +589,10 @@ describe DevicesController, type: :controller do
           end.to change(Device, :count).by(2)
         end
 
-        it 'reports in flash "Import successfully completed. 2 lines updated/added. 0 lines removed."' do
+        it 'reports in flash "Import successfully completed. 2 lines updated/added. "' do
           post :import, {customer_id: customer.id, import_file: two_others}, valid_session
           expect(controller.flash['notice'])
-              .to eq "Import successfully completed. 2 lines updated/added. 0 lines removed."
+              .to eq "Import successfully completed. 2 lines updated/added. "
         end
       end   # whitout parameter :clear_existing_data
 
@@ -605,12 +605,12 @@ describe DevicesController, type: :controller do
           end.to change(Device, :count).by(1)
         end
 
-        it 'reports in flash "Import successfully completed. 2 lines updated/added. 1 lines removed."' do
+        it 'reports in flash "Import successfully completed. 2 lines updated/added. One line removed."' do
           post :import,
               {customer_id: customer.id, import_file: two_others, clear_existing_data: true},
               valid_session
           expect(controller.flash['notice'])
-              .to eq "Import successfully completed. 2 lines updated/added. 1 lines removed."
+              .to eq "Import successfully completed. 2 lines updated/added. One line removed."
         end
       end   # whito parameter :clear_existing_data
     end   # updating the data

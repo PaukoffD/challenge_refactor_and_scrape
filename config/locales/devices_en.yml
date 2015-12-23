@@ -61,20 +61,25 @@ en:
       no_number: "An entry at the line %{line} has no number"
       not_scv: 'The file is not a valid CSV file'
       not_row: 'There is no data in the file'
+      please_upload: 'Please upload a file to be imported'
       removed:
-        one: '%{count} lines removed.'
+        zero: ''
+        one: 'One line removed.'
         other: '%{count} lines removed.'
       success: 'Import successfully completed.'
       title: 'Importing devices for the customer %{name}'
       unknown_accounting_category: 'New "%{value1}" code: "%{value2}" at the line %{line}'
       unknown_accounting_type: "'%{name}' is not a valid accounting type"
       updated:
+        zero: ''
         one: 'One line updated/added.'
         other: '%{count} lines updated/added.'
       upload: 'Upload and import file'
       warning:
         one: 'A warning was issued'
         other: '%{count} warnings were issued'
+      warning_no_accounts: 'This customer does not have any business accounts.  Any device import will fail to process correctly.'
+      warning_no_devices: 'This customer has no devices. The import file needs to have at least the following columns: number, username, business_account_id, device_make_id'
     index:
       back: 'Back to the customer'
       confirm: "Are you sure you want to delete the device?"
