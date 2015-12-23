@@ -2,7 +2,7 @@ Rails.application.routes.draw do
   resources :customers do
     resources :devices, shallow: true do
       collection do
-        get 'import'
+        get 'new_import'
         post 'import'
       end
     end

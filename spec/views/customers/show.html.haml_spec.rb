@@ -17,6 +17,6 @@ describe "customers/show", type: :view do
 
   it 'has the link to the import devices in dl>dd' do
     render
-    assert_select 'dl>dd>a[href=?]', import_customer_devices_path(@customer)
+    assert_select 'dl>dd>a[href=?]', new_import_customer_devices_path(@customer)
   end
 end

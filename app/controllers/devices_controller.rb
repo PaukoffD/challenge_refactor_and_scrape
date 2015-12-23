@@ -5,18 +5,13 @@ class DevicesController < InheritedResources::Base
   respond_to :html, :json
   belongs_to :customer, shallow: true
 
+  def new_import
+    find_customer_and_init_warinings
+    render 'import'
+  end
+
   def import
-    @customer = Customer.find params[:customer_id]
-    @warnings = []
-
-    if @customer.devices.count(:all) == 0
-      @warnings << t('.warning_no_devices')
-    end
-    if @customer.business_accounts.count(:all) == 0
-      @warnings << t('.warning_no_accounts')
-    end
-
-    return unless request.post?   # Old good rails v.1.0 style ;-)
+    find_customer_and_init_warinings
 
     import_file = params[:import_file]
     return flash[:error] = t('.please_upload') if import_file.blank?
@@ -47,6 +42,18 @@ class DevicesController < InheritedResources::Base
   end   # import
 
   private
+
+  def find_customer_and_init_warinings
+    @customer = Customer.find params[:customer_id]
+    @warnings = []
+
+    if @customer.devices.count(:all) == 0
+      @warnings << t('.warning_no_devices')
+    end
+    if @customer.business_accounts.count(:all) == 0
+      @warnings << t('.warning_no_accounts')
+    end
+  end
 
   def device_params
     params.require(:device).permit(:number, :customer_id, :device_make_id, :device_model_id, :status, :imei_number, :sim_number, :model, :carrier_base_id, :business_account_id, :contract_expiry_date, :username, :location, :email, :employee_number, :contact_id, :inactive, :in_suspension, :is_roaming, :additional_data_old, :added_features, :current_rate_plan, :data_usage_status, :transfer_to_personal_status, :apple_warranty, :eligibility_date, :number_for_forwarding, :call_forwarding_status, :asset_tag)

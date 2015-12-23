@@ -198,40 +198,40 @@ describe DevicesController, type: :controller do
     end
   end   # describe "DELETE destroy"
 
-  describe "GET import" do
+  describe "GET new_import" do
     before :each do
       @customer = create :customer
     end
 
     it 'renders :import template' do
-      get :import, {customer_id: @customer.id}, valid_session
+      get :new_import, {customer_id: @customer.id}, valid_session
       expect(response).to render_template("import")
     end
 
     it 'fills @warnings with two messages if @customer does not have any devices nor business_accounts' do
-      get :import, {customer_id: @customer.id}, valid_session
+      get :new_import, {customer_id: @customer.id}, valid_session
       expect(assigns(:warnings).size).to be 2
     end
 
     it 'fills @warnings with one message if @customer does not have any devices' do
       create :business_account, customer: @customer
-      get :import, {customer_id: @customer.id}, valid_session
+      get :new_import, {customer_id: @customer.id}, valid_session
       expect(assigns(:warnings).size).to be 1
     end
 
     it 'fills @warnings with one message if @customer does not have any ' do
       create :device, customer: @customer
-      get :import, {customer_id: @customer.id}, valid_session
+      get :new_import, {customer_id: @customer.id}, valid_session
       expect(assigns(:warnings).size).to be 1
     end
 
     it 'leaves @warnings if @customer has at least one device awa business_account' do
       create :business_account, customer: @customer
       create :device, customer: @customer
-      get :import, {customer_id: @customer.id}, valid_session
+      get :new_import, {customer_id: @customer.id}, valid_session
       expect(assigns(:warnings).size).to be 0
     end
-  end   # GET import
+  end   # GET new_import
 
   describe "POST import" do
     let(:customer) {create :customer}
