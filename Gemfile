@@ -11,6 +11,9 @@ gem 'pg', '~> 0.15'
 # Controllers
 gem 'inherited_resources'
 
+# models
+gem 'mechanize', github: 'sparklemotion/mechanize' # wait for v2.7.4 as 2.7.3 is buggy
+
 # views
 # Use SCSS for stylesheets
 gem 'sass-rails', '~> 5.0'
