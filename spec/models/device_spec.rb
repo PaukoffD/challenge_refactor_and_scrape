@@ -204,10 +204,10 @@ describe Device, type: :model do
       end   # when headrs do not contain unknown AccountingType for accounting_category
 
       context 'when headrs contain unknown AccountingType for accounting_category' do
-        let(:headers) {%w(accounting_categories[Unknow])}
+        let(:headers) {%w(accounting_categories[UK1] accounting_categories[UK2])}
 
         it 'returns the list of unknown AccountingTypes met' do
-          expect(Device.check_headers customer, headers).to eq %w[Unknow]
+          expect(Device.check_headers customer, headers).to eq %w[UK1 UK2]
         end
       end   # when headrs contain unknown AccountingType for accounting_category
     end   # .check_headers
@@ -259,7 +259,7 @@ describe Device, type: :model do
         end
       end   # when a line in the csv file has not a device number in one line
 
-      context 'when a device number is repeated on a line' do
+      context 'when a device number is repeated in the csv' do
         let(:csv) {CSV.open fixture_path + '/minimal_with_repeated_number.csv', headers: true}
 
         it 'adds the error for this device number to the errors' do
@@ -268,7 +268,7 @@ describe Device, type: :model do
           expect(errors['4038283663'].size).to be 1
           expect(errors['4038283663']).to eq [[:duplicate, 3]]
         end
-      end   # when a device number is repeated on a line
+      end   # when a device number is repeated in the csv
 
       context 'with an unknown accounting_category' do
         let(:csv) {CSV.open fixture_path + '/with_new_accounting_category.csv', headers: true}
@@ -380,7 +380,7 @@ describe Device, type: :model do
         context 'with clear_existing_data' do
           let(:clear) {true}
 
-          it 'adds new Devices and removes old' do
+          it 'adds new Devices and removes old not present in the Hash' do
             expect do
               Device.import csv, customer, clear, current_user
             end.to change(Device, :count).by 1
@@ -393,7 +393,7 @@ describe Device, type: :model do
 
       end   #when .parse returns no errors and valid atributes for NEW devices
 
-      context 'when .parse returns no errors and invalid atribute for any device' do
+      context 'when .parse returns no errors but any invalid atributes set for any device exists' do
         let(:errors) {{}}
         let(:data) do   # NOTE: Here must be present all required attributes
           {
@@ -430,7 +430,7 @@ describe Device, type: :model do
           expect(Device.import csv, customer, clear, current_user)
               .to eq "101" => ["Device make can't be blank"]
         end
-      end   # when .parse returns no errors and invalid atribute for any device
+      end   # when .parse returns no errors but any invalid atributes set for any device exists
     end   # .import
   end   # class
 end

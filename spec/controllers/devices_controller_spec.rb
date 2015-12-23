@@ -260,11 +260,6 @@ describe DevicesController, type: :controller do
       end
     end
 
-    it 'calls Device.lookups with customer' do
-      expect(Device).to receive(:lookups).twice.with(customer).and_return({})
-      post :import, {customer_id: customer.id, import_file: file}, valid_session
-    end
-
     describe 'calls Device.check_headers with @customer and array of headers and' do
       let(:headers) {%w[username number device_make_id business_account_id status]}
 
@@ -591,7 +586,7 @@ describe DevicesController, type: :controller do
         post :import, {customer_id: customer.id, import_file: one_deivce}, valid_session
       end
 
-      context 'whitout parameter :clear_existing_data' do
+      context 'without parameter :clear_existing_data' do
         it 'only adds two new records' do
           expect do
             post :import, {customer_id: customer.id, import_file: two_others}, valid_session
@@ -603,9 +598,9 @@ describe DevicesController, type: :controller do
           expect(controller.flash['notice'])
               .to eq "Import successfully completed. 2 lines updated/added. "
         end
-      end   # whitout parameter :clear_existing_data
+      end   # without parameter :clear_existing_data
 
-      context 'whito parameter :clear_existing_data' do
+      context 'with parameter :clear_existing_data' do
         it 'removes the old record and adds two new ones' do
           expect do
             post :import,
@@ -621,7 +616,7 @@ describe DevicesController, type: :controller do
           expect(controller.flash['notice'])
               .to eq "Import successfully completed. 2 lines updated/added. One line removed."
         end
-      end   # whito parameter :clear_existing_data
+      end   # with parameter :clear_existing_data
     end   # updating the data
   end   # describe "POST import"
 end
