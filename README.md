@@ -266,3 +266,16 @@ I'm not sure, but the following things seems to be buggy. Maybe some of them is 
   So I decided that the most obvious case takes place, `:carrier_base` is the assosiation of `Device`. Since the nullification of the `carrier_base_id` causes exception I've **FIXED** this bug.
 1. The columns in csv file that are unknown for `Device` are not filtered out and cause an error.
 1. There is no diagnostics when `accounting_categories` for any `AccountingType` has unknown value.
+
+## Scrape Info
+
+### Description
+
+We order mobile phones from dealers. Dealers ship them through Purolator:
+http://www.purolator.com/
+
+We want to display in our system what's going on with each shipment, based on it's tracking number.
+
+Example tracking numbers: 330605984583, 330599320893, 330603276958, 330606984475
+
+Sometimes dealers use other shipping providers, so please make sure your solution could be extended to use them (UPS, FedEx, etc.)
