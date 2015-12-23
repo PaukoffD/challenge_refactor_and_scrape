@@ -341,7 +341,7 @@ describe DevicesController, type: :controller do
 
       it 'leaves @errors to be blank' do
         post :import, {customer_id: @customer.id, import_file: file}, valid_session
-        expect(assigns(:errors).size).to be 0
+        expect(assigns(:errors)).to be_blank
       end
 
       it 'correctly fills all the associated fields' do
@@ -525,7 +525,7 @@ describe DevicesController, type: :controller do
 
         it 'adds no @errors' do
           post :import, {customer_id: customer.id, import_file: file}, valid_session
-          expect(assigns(:errors).size).to be 0
+          expect(assigns(:errors)).to be_blank
         end
       end   # and its status is "cancelled
 
@@ -563,7 +563,7 @@ describe DevicesController, type: :controller do
 
           it 'adds no @errors' do
             post :import, {customer_id: customer.id, import_file: file}, valid_session
-            expect(assigns(:errors).size).to be 0
+            expect(assigns(:errors)).to be_blank
           end
         end   # and the status of the new one is "cancelled
       end   # and its status is not "cancelled
