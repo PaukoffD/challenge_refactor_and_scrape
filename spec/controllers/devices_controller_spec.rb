@@ -271,7 +271,11 @@ describe DevicesController, type: :controller do
           expect(assigns(:errors)['General'].first).to eq "'Heder' is not a valid accounting type"
         end
 
-        it 'stops processing'
+        it 'stops processing' do
+          allow(Device).to receive(:check_headers).and_return result
+          expect(Device).not_to receive :import
+          post :import, {customer_id: customer.id, import_file: file}, valid_session
+        end
       end   # when the result has elements
     end   # calls Device.check_headers
 
@@ -380,7 +384,6 @@ describe DevicesController, type: :controller do
       end
 
       it 'lists all the cases' do
-        skip 'FIXME!'
         post :import, {customer_id: customer.id, import_file: file}, valid_session
         expect(assigns(:errors)['General'].size).to satisfy{|v| v > 1}
       end
@@ -429,17 +432,10 @@ describe DevicesController, type: :controller do
       context 'when a line in the csv file has not a device number in one line' do
         let(:file) {fixture_file_upload '/minimal_wo_number.csv'}
 
-        it 'does not store any line FIXME: to be removed' do
+        it 'does not store any line' do
           expect do
             post :import, {customer_id: customer.id, import_file: file}, valid_session
           end.not_to change(Device, :count)
-        end
-
-        it 'stores the rest lines' do
-          skip 'FIXME if needed or remove otherwise'
-          expect do
-            post :import, {customer_id: customer.id, import_file: file}, valid_session
-          end.to change(Device, :count).by(2)
         end
 
         it 'adds the General error to the @errors' do
@@ -452,18 +448,10 @@ describe DevicesController, type: :controller do
       context 'when a device number is repeated on a line' do
         let(:file) {fixture_file_upload '/minimal_with_repeated_number.csv'}
 
-        it 'does not store any line FIXME: to be removed' do
+        it 'does not store any line' do
           expect do
             post :import, {customer_id: customer.id, import_file: file}, valid_session
           end.not_to change(Device, :count)
-        end
-
-        it 'stores the all the lines except the second repeated one' do
-          skip 'FIXME if needed or remove otherwise'
-          expect do
-            post :import, {customer_id: customer.id, import_file: file}, valid_session
-          end.to change(Device, :count).by(3)
-          expect(Device.find_by(number: '4038283663').username).to eq 'Guy Number 2'
         end
 
         it 'adds the error for this device number to the @errors' do
@@ -476,17 +464,10 @@ describe DevicesController, type: :controller do
       context 'with an unknown accounting_category' do
         let(:file) {fixture_file_upload '/with_new_accounting_category.csv'}
 
-        it 'does not store any line FIXME: to be removed' do
+        it 'does not store any line' do
           expect do
             post :import, {customer_id: customer.id, import_file: file}, valid_session
           end.not_to change(Device, :count)
-        end
-
-        it 'stores the all the lines except the line with unknown accounting_category' do
-          skip 'FIXME if needed or remove otherwise'
-          expect do
-            post :import, {customer_id: customer.id, import_file: file}, valid_session
-          end.to change(Device, :count).by(2)
         end
 
         it 'adds the error for this device number to the @errors' do
@@ -531,17 +512,10 @@ describe DevicesController, type: :controller do
 
       context 'and its status is not "cancelled"' do
         context 'and the status of the new one is not "cancelled"' do
-          it 'does not store any line FIXME: to be removed' do
+          it 'does not store any line' do
             expect do
               post :import, {customer_id: customer.id, import_file: file}, valid_session
             end.not_to change(Device, :count)
-          end
-
-          it 'stores the all the lines except except the line with the same device number' do
-            skip 'FIXME if needed or remove otherwise'
-            expect do
-              post :import, {customer_id: customer.id, import_file: file}, valid_session
-            end.to change(Device, :count).by(2)
           end
 
           it 'adds the error for this device number to the @errors' do
