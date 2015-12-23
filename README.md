@@ -244,15 +244,13 @@ But for now, please make an assumption and document it somewhere or just write a
 
 ### Notes
 
-1. For sure for simplicity the authorization and authentications are omitted. The controller variable `current_user` will return a string as a stub` ;-)
-1. For sure db/seeds.rb is needed only for the purpose of this task.
-1. If at least on line in csv causes an error, no lines are saved. Looking at the code it seems it is not and intention.
-1. It is strange that `AccountingType`s are individual for each `Customer`. Should not it be considered to try to use the common dictionary?
-1. Why not to create a new `AccountingType` if it is missing?
+1. Of course, for simplicity the authorization and authentications are omitted. The controller variable `current_user` will return a string as a stub ;-)
+1. For sure db/seeds.rb is needed only for the purpose of this task. I could delete them but I did not.
+1. Most of the specs written for the `DevicesController` should be removed after refactoring. They are marked with  TODO comment but left in the code.
+1. Some specs for `DevicesController` should be placed outside of the context 'with a mminimal set of fields' but since it is not so important I've left them there for simplicity since they are to be removed at the end.
 1. As the sample csv file for devices contains different values in the field `username` and exiting code processes all the lines of the csv file, I assume it is the field of the `Device` that refers to some person affiliated to `Customer`.
-The warning on the line 7 thus means something not implied from and not corresponding to the code of `DevicesController#import`.
-1. It would be not bad to strip `AccountingCategory#name` at the `save` in order not to do it each time. ;-)
-1. Some specs should be placed outside of 'with a mminimal set of fields' context but since it is not so important I've left them there for simplicity.
+1. It is strange that `AccountingType`s are individual for each `Customer`. Should not it be considered to try to use the common dictionary?
+1. It would be not bad to strip `AccountingCategory#name` at the `save` time in order not to do it each time later at import Devices. ;-)
 
 ### Bugs found
 
