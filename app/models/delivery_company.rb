@@ -47,4 +47,44 @@ class DeliveryCompany < ActiveRecord::Base
 
   scope :ordered, -> { order(:name) }
 
+  # Loads the page from +url+, finds the form, fills the field named +field_name+,
+  # submits the form via button +submit+, and returns the fragment at +xpath+ of
+  # the answer.
+  def pull(query)
+    return {blank_query: query.to_s} unless query.present?
+    query = query.split(/(,| )\s*/)
+    page = agent.get URI url
+    return {not_a_page_at_url: [url, page]} unless page.is_a? Mechanize::Page
+    form = page.forms.find do |form|
+      if form_name.present?
+        form.name == form_name
+      else
+        form.action == form_action
+      end
+    end or return {no_form: url}
+    field = form.fields.find do |field|
+      field.name == field_name
+    end or return {no_field: field_name}
+    # here we can loop to get multiple requests an once ;-)
+    field.value = query.first
+    button = form.submits.find do |button|
+      button.name == submit
+    end
+    logger.debug "DeliveryCompany@#{__LINE__}#pull #{button.inspect}" if logger.debug?
+    result = form.submit button
+    return {not_a_page: [button.try(:name), result]} unless result.is_a? Mechanize::Page
+    result = result.xpath xpath
+    return {no_xpath: xpath} if result.blank?
+    result.to_html
+  end   # pull
+
+  private
+
+  # Initializes and returns Mechanize agent
+  def agent
+    @agent and return @agent
+    @agent = Mechanize.new
+    @agent.log = logger if logger.debug?
+    @agent
+  end
 end
