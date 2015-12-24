@@ -1,0 +1,42 @@
+- title t('.title')
+
+%p.nav= link_to t('.new_delivery_company'), new_delivery_company_path, class: 'new'
+
+- if @delivery_companies.limit(1).size > 0
+  %table
+    %thead
+      %tr
+        %th= DeliveryCompany.human_attribute_name :name
+        %th= DeliveryCompany.human_attribute_name :url
+        %th= DeliveryCompany.human_attribute_name :form_name
+        %th= DeliveryCompany.human_attribute_name :form_action
+        %th= DeliveryCompany.human_attribute_name :field_name
+        %th= DeliveryCompany.human_attribute_name :extra_fields
+        %th= DeliveryCompany.human_attribute_name :extra_values
+        %th= DeliveryCompany.human_attribute_name :submit
+        %th= DeliveryCompany.human_attribute_name :xpath
+        %th{:colspan => 3}= t 'actions'
+
+    %tbody
+      - @delivery_companies.each do |delivery_company|
+        %tr{ :class => cycle(:odd, :even) }
+          %td= delivery_company.name
+          %td= delivery_company.url
+          %td= delivery_company.form_name
+          %td= delivery_company.form_action
+          %td= delivery_company.field_name
+          %td= delivery_company.extra_fields
+          %td= delivery_company.extra_values
+          %td= delivery_company.submit
+          %td= delivery_company.xpath
+          %td.action
+            = link_to t('show'), delivery_company, class: 'show'
+          %td.action
+            = link_to t('edit'), edit_delivery_company_path(delivery_company), class: 'edit'
+          %td.action
+            = link_to t('destroy'), delivery_company,
+                data: {confirm: t('.confirm', default: 'Are you sure?')},
+                method: :delete, class: 'destroy'
+- else
+  .empty
+    = t '.empty'

@@ -1,0 +1,31 @@
+- title t('.title')
+
+%p.nav
+  = link_to t('back'), delivery_companies_path, class: 'index'
+  = link_to t('edit'), edit_delivery_company_path(@delivery_company), class: 'edit'
+
+%dl
+  %dt= DeliveryCompany.human_attribute_name :name
+  %dd= @delivery_company.name
+  %dt= DeliveryCompany.human_attribute_name :url
+  %dd= @delivery_company.url
+  - if @delivery_company.form_name.present?
+    %dt= DeliveryCompany.human_attribute_name :form_name
+    %dd= @delivery_company.form_name
+  - if @delivery_company.form_action.present?
+    %dt= DeliveryCompany.human_attribute_name :form_action
+    %dd= @delivery_company.form_action
+  %dt= DeliveryCompany.human_attribute_name :field_name
+  %dd= @delivery_company.field_name
+  - if @delivery_company.extra_fields.present?
+    %dt= DeliveryCompany.human_attribute_name :extra_fields
+    %dd= @delivery_company.extra_fields
+    %dt= DeliveryCompany.human_attribute_name :extra_values
+    %dd= @delivery_company.extra_values
+  %dt= DeliveryCompany.human_attribute_name :submit
+  %dd= @delivery_company.submit
+  %dt= DeliveryCompany.human_attribute_name :xpath
+  %dd= @delivery_company.xpath
+  - if @delivery_company.css.present?
+    %dt= DeliveryCompany.human_attribute_name :css
+    %dd= @delivery_company.css

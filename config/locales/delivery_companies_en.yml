@@ -1,0 +1,44 @@
+---
+en:
+  activerecord:
+    models:
+      delivery_company: "Delivery company"
+    attributes:
+      delivery_company: 
+        name: "Name"
+        url: "Url"
+        form_name: "Form name"
+        form_action: "Form action"
+        field_name: "Field name"
+        extra_fields: "Extra fields"
+        extra_values: "Extra values"
+        submit: "Submit"
+        xpath: "Xpath"
+        css: "Css"
+    errors:
+      messages:
+        no_host: 'host is missing'
+        not_http: 'protocol must be http or https'
+        not_url: 'wrong format'
+  helpers:
+    submit:
+      delivery_company:
+        create: "Create delivery company"
+        update: "Update delivery company"
+  delivery_companies:
+    edit:
+      title: "Editing of the delivery company"
+    form:
+      delivery_company: "Delivery company"
+    index:
+      confirm: "Are you sure you want to delete the delivery company?"
+      empty: "No delivery companies found"
+      new_delivery_company: "Add a new delivery company"
+      title: "Listing of delivery companies"
+    new:
+      title: "Adding a new delivery company"
+    show:
+      title: "Delivery company details"
+    was_created: "Delivery company was successfully added"
+    was_deleted: "Delivery company was successfully deleted"
+    was_updated: "Delivery company was successfully updated"

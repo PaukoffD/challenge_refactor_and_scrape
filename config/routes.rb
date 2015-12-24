@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  resources :delivery_companies
   resources :customers do
     resources :devices, shallow: true do
       collection do

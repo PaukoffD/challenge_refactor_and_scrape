@@ -43,3 +43,19 @@ CUSTOMERS.each do |name, data|
     customer.business_accounts.find_or_create_by name: name
   end
 end
+
+DELIVERYCOMPANES = [
+  {
+   name: 'purolator',
+   url: 'http://www.purolator.com',
+   form_name: 'trackSearch',
+   field_name: 'search',
+   submit: 'buttonTrackSearch',
+   xpath: %q(//*[@id='pin']/../..),
+  }
+]
+
+DELIVERYCOMPANES.each do |attributes|
+  delivery_company = DeliveryCompany.find_or_create_by name: attributes[:name]
+  delivery_company.update_attributes attributes
+end

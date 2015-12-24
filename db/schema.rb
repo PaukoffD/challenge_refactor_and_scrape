@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151223222113) do
+ActiveRecord::Schema.define(version: 20151224113642) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -59,6 +59,24 @@ ActiveRecord::Schema.define(version: 20151223222113) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
+
+  create_table "delivery_companies", force: :cascade do |t|
+    t.string   "name",         null: false
+    t.string   "url",          null: false
+    t.string   "form_name"
+    t.string   "form_action"
+    t.string   "field_name",   null: false
+    t.string   "extra_fields"
+    t.string   "extra_values"
+    t.string   "submit"
+    t.string   "xpath"
+    t.text     "css"
+    t.datetime "created_at",   null: false
+    t.datetime "updated_at",   null: false
+  end
+
+  add_index "delivery_companies", ["name"], name: "index_delivery_companies_on_name", using: :btree
+  add_index "delivery_companies", ["url"], name: "index_delivery_companies_on_url", using: :btree
 
   create_table "device_makes", force: :cascade do |t|
     t.string   "name"

@@ -1,0 +1,17 @@
+= simple_form_for(@delivery_company) do |f|
+  = f.error_notification
+
+  .form-inputs
+    = f.input :name
+    = f.input :url
+    = f.input :form_name
+    = f.input :form_action
+    = f.input :field_name
+    = f.input :extra_fields
+    = f.input :extra_values
+    = f.input :submit
+    = f.input :xpath
+    = f.input :css
+
+  .form-actions
+    = f.button :submit
