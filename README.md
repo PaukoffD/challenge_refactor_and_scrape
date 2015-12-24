@@ -246,8 +246,8 @@ But for now, please make an assumption and document it somewhere or just write a
 
 1. Of course, for simplicity the authorization and authentications are omitted. The controller variable `current_user` will return a string as a stub ;-)
 1. For sure db/seeds.rb is needed only for the purpose of this task. I could delete them but I did not.
-1. Most of the specs written for the `DevicesController` should be removed after refactoring. They are marked with  TODO comment but left in the code.
-1. Some specs for `DevicesController` should be placed outside of the context 'with a mminimal set of fields' but since it is not so important I've left them there for simplicity since they are to be removed at the end.
+1. Most of the specs written for the `DevicesController` should be removed after re-factoring. They are marked with  TODO comment but left in the code.
+1. Some specs for `DevicesController` should be placed outside of the context 'with a minimal set of fields' but since it is not so important I've left them there for simplicity since they are to be removed at the end.
 1. As the sample csv file for devices contains different values in the field `username` and exiting code processes all the lines of the csv file, I assume it is the field of the `Device` that refers to some person affiliated to `Customer`.
 1. It is strange that `AccountingType`s are individual for each `Customer`. Should not it be considered to try to use the common dictionary?
 1. It would be not bad to strip `AccountingCategory#name` at the `save` time in order not to do it each time later at import Devices. ;-)
@@ -263,7 +263,7 @@ I'm not sure, but the following things seems to be buggy. Maybe some of them is 
   2. The csv file should not contain field `carrier_base_id`.
   3. The code must process `carrier_base_id` field properly. Now it nullifies it.
 
-  So I decided that the most obvious case takes place, `:carrier_base` is the assosiation of `Device`. Since the nullification of the `carrier_base_id` causes exception I've **FIXED** this bug.
+  So I decided that the most obvious case takes place, `:carrier_base` is the association of `Device`. Since the nullification of the `carrier_base_id` causes exception I've **FIXED** this bug.
 1. The columns in csv file that are unknown for `Device` are not filtered out and cause an error.
 1. There is no diagnostics when `accounting_categories` for any `AccountingType` has unknown value.
 
@@ -279,3 +279,8 @@ We want to display in our system what's going on with each shipment, based on it
 Example tracking numbers: 330605984583, 330599320893, 330603276958, 330606984475
 
 Sometimes dealers use other shipping providers, so please make sure your solution could be extended to use them (UPS, FedEx, etc.)
+
+### Notes
+
+1. I've implemented possibility to enter only one number at a time while it is
+easy to allow look up several numbers.
