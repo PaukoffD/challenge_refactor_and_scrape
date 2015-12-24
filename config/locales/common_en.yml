@@ -1,0 +1,18 @@
+---
+en:
+  Back: Back
+  actions: Actions
+  application_name: Leadhacker.ru
+  are_you_sure: 'Are you sure?'
+  back: 'Back to list'
+  cancel: Cancel
+  destroy: Delete
+  edit: Edit
+  edit_profile: 'Edit Profile'
+  locale:
+    native_name: English
+  login: Login
+  logout: Logout
+  show: Show
+  sign_up: 'Sign up'
+  you_are_logged_as: 'You are logged as %{name}'

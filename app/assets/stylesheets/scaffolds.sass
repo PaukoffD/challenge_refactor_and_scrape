@@ -1,9 +1,26 @@
+@import colors
+
 body
-  background-color: #fff
-  color: #333
+  background-color: $body_bg
+  color: $text
   font-family: verdana, arial, helvetica, sans-serif
   font-size: 13px
   line-height: 18px
+  h1
+    color: $body_h1
+    font-size: 28px
+    font-stretch: semi-expanded
+    font-weight: bold
+    line-height: 32px
+    margin: 18px
+    text-align: center
+    text-transform: uppercase
+  h2
+    font-size: 24px
+    line-height: 26px
+  h3
+    font-size: 22px
+    line-height: 24px
 
 p, ol, ul, td
   font-family: verdana, arial, helvetica, sans-serif
@@ -11,40 +28,32 @@ p, ol, ul, td
   line-height: 18px
 
 pre
-  background-color: #eee
+  background-color: $unformatted
   padding: 10px
   font-size: 11px
 
 a
-  color: #000
-
+  color: $link
   &:visited
-    color: #666
-
+    color: $link_visited
   &:hover
-    color: #fff
-    background-color: #000
+    color: $link_hover
+    background-color: $link_hover_bg
 
 div
   &.field, &.actions
     margin-bottom: 10px
 
 #notice
-  color: green
-
-.field_with_errors
-  padding: 2px
-  background-color: red
-  display: table
+  color: $notice
 
 #error_explanation
   width: 450px
-  border: 2px solid red
+  border: 2px solid $error_explanation_border
   padding: 7px
   padding-bottom: 0
   margin-bottom: 20px
-  background-color: #f0f0f0
-
+  background-color: $error_explanation_bg
   h2
     text-align: left
     font-weight: bold
@@ -52,9 +61,81 @@ div
     font-size: 12px
     margin: -7px
     margin-bottom: 0px
-    background-color: #c00
-    color: #fff
-
+    background-color: $error_explanation_header_bg
+    color: $error_explanation_header
   ul li
     font-size: 12px
     list-style: square
+
+.simple_form
+  display: block
+  margin: 0 auto
+  width: 750px
+  div
+    margin-bottom: 12px
+  input
+    height: 18px
+    &[type=submit]
+      color: $form_button
+      background-color: $form_button_bg
+      border: none
+      font-size: 16px
+      font-weight: bold
+      height: 44px
+      text-transform: uppercase
+      padding: 0 40px
+      width: auto
+  input, textarea
+    border: solid
+    border-color: $form_color
+    border-radius: 6px
+    border-width: 2px
+    font-size: 16px
+    padding: 1px 8px
+    width: 340px
+    &[type=checkbox]
+      position: relative
+      top: 14px
+      width: 30px
+  label
+    color: $form_color
+    float: left
+    font-size: 16px
+    font-weight: bold
+    margin: 2px 28px 2px 2px
+    text-align: right
+    text-transform: uppercase
+    width: 176px
+    &.boolean
+      float: none
+      font-weight: normal
+      margin-left: 11em
+      padding-left: 24px
+      text-transform: none
+  ul
+    margin-left: 196px
+    label
+      float: none
+      font-weight: normal
+  textarea
+    height: 110px
+  .actions
+    margin-left: 206px
+    a
+      display: block
+      height: 18px
+    input
+      margin-bottom: 6px
+  .field_with_errors
+    padding: 2px
+    position: relative
+    input
+      border: 1px solid $error_explanation
+    .error
+      color: $error_explanation
+      left: 14px + 176px + 30px
+      position: absolute
+      top: -21px
+
+.translation_missing
+  background: $translation_missing
