@@ -49,6 +49,10 @@ GEM
     activemodel (4.2.5)
       activesupport (= 4.2.5)
       builder (~> 3.1)
+    activemodel-associations (0.1.2)
+      activemodel (< 5)
+      activerecord (< 5)
+      activesupport (< 5)
     activerecord (4.2.5)
       activemodel (= 4.2.5)
       activesupport (= 4.2.5)
@@ -288,6 +292,7 @@ PLATFORMS
 
 DEPENDENCIES
   active_record_model_and_rspec_enhanced_templates
+  activemodel-associations
   advanced_haml_scaffold_generator
   annotate (~> 2.6.5)
   byebug
