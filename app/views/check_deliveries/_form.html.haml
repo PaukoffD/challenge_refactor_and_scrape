@@ -1,0 +1,9 @@
+= simple_form_for(@check_delivery) do |f|
+  = f.error_notification
+
+  .form-inputs
+    = f.association :delivery_company
+    = f.input :query
+
+  .form-actions
+    = f.button :submit

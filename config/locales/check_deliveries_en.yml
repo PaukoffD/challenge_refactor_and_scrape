@@ -1,0 +1,29 @@
+---
+en:
+  activemodel:
+    models:
+      check_delivery: "Check delivery"
+    attributes:
+      check_delivery:
+        delivery_company: "Delivery company"
+        # query: "Tracking numbers"
+        query: "Tracking number"
+  helpers:
+    submit:
+      check_delivery:
+        create: "Check delivery status"
+  check_deliveries:
+    create:
+      messages:
+        blank_query: 'Tracking number must be present'
+        no_field: 'There is not a field named %{value}'
+        no_form: 'Url %{value} does not have the form required. Check Delivery company settings'
+        no_xpath: 'There is not an element at xpath %{value}'
+        not_a_page: 'Sending the form via %{value} returns %{extrq}'
+        not_a_page_at_url: 'Address %{value} returns not html but %{extrq}'
+    form:
+      check_delivery: "Check delivery"
+    new:
+      title: "Checking the delivery status"
+    show:
+      title: "Check delivery result"
