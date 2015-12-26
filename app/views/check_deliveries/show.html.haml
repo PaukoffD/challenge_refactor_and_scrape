@@ -1,7 +1,14 @@
 - title t('.title')
+- content_for(:head) do
+  %base{href: @check_delivery.delivery_company.url}
 
 %p.nav
-  = link_to t('back'), new_check_delivery_path, class: 'index'
+  = link_to t('back'), new_check_delivery_url, class: 'index'
 
-#result
-  != @result
+#simplex_mobility_result_of_check_deliveries
+  - if (css = @check_delivery.delivery_company.css).present?
+    %style
+      = css
+
+  %span
+    != @result

@@ -51,7 +51,8 @@ DELIVERYCOMPANES = [
    form_name: 'trackSearch',
    field_name: 'search',
    submit: 'buttonTrackSearch',
-   xpath: %q(//*[@id='pin']/../..),
+   xpath: %q(//*[@id='pin']/../../..),
+   css: File.read(File.expand_path('../seeds/purolator.css.css', __FILE__))
   }
 ]
 

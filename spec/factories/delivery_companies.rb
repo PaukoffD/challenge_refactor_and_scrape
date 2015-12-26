@@ -28,6 +28,6 @@ FactoryGirl.define do
     extra_values ""
     sequence(:submit) {|n| "submit#{n}"}
     sequence(:xpath) {|n| "//patrh/to/content#{n}"}
-    css 'color: blue'
+    css 'body {color: blue;}'
   end
 end

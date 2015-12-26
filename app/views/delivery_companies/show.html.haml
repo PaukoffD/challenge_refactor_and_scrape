@@ -28,4 +28,5 @@
   %dd= @delivery_company.xpath
   - if @delivery_company.css.present?
     %dt= DeliveryCompany.human_attribute_name :css
-    %dd= @delivery_company.css
+    %dd.css
+      = @delivery_company.css
