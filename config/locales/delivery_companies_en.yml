@@ -32,8 +32,10 @@ en:
       delivery_company: "Delivery company"
     index:
       confirm: "Are you sure you want to delete the delivery company?"
+      customers: 'Customers listing'
       empty: "No delivery companies found"
       new_delivery_company: "Add a new delivery company"
+      request: 'Check delivery status'
       title: "Listing of delivery companies"
     new:
       title: "Adding a new delivery company"

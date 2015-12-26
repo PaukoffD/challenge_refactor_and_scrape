@@ -21,6 +21,7 @@ en:
       customer: "Customer"
     index:
       confirm: "Are you sure you want to delete the customer?"
+      delivery_companies: 'Delivery companies listing'
       empty: "No customers found"
       new_customer: "Add a new customer"
       title: "Listing of customers"
