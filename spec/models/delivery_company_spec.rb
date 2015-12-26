@@ -143,128 +143,25 @@ describe DeliveryCompany, type: :model do
     end
     let(:html) {html_page 'empty_page'}
     let(:agent) {subject.send :agent}
-    let(:page) do
+    let(:param) {'123, 234'}
+    let(:page) do   # TODO: REMOVE
       Mechanize::Page.new URI(subject.url), nil, html, 200, agent
     end
-    let(:param) {'123, 234'}
 
-    it 'loads the url page via Mechanize' do
-      expect(agent).to receive(:get).with(URI subject.url) {page}
+    before :each do
+      allow(agent).to receive(:goto) {subject.url}
+    end   # before
+
+    it 'loads the url page via #agent' do
+      expect(agent).to receive(:goto).with(subject.url) {subject.url}
       subject.pull param
     end
-
-    context 'when page at url' do
-      before :each do
-        allow(agent).to receive(:get) {page}
-      end   # before
-
-      context 'is not a Mechanize::Page' do
-        let(:page) {Mechanize::File.new}
-
-        it 'returns a hash {not_a_page_at_url: [url, page]}' do
-          expect(subject.pull param).to eq not_a_page_at_url: [subject.url, page]
-        end
-      end   # is not a Mechanize::Page
-
-      context 'is a Mechanize::Page' do
-        it 'looks up the form by #form_name' do
-          expect(page.forms).to receive(:find)
-          subject.pull param
-        end
-
-        context 'and the specified form is not found' do
-          it 'returns Hash {no_form: url}' do
-            expect(subject.pull param).to eq no_form: subject.url
-          end
-        end   # and the specified form is not found
-
-        context 'and the specified form is found' do
-          let(:html) {html_page 'form_without_field'}
-          let(:form) {page.forms.first}
-
-          it 'looks up the field with the name = #field_name' do
-            expect(form.fields).to receive(:find).and_call_original
-            subject.pull param
-          end
-
-          it 'returns a hash {no_field: field_name} if the field is not found' do
-            expect(subject.pull param).to eq no_field: subject.field_name
-          end
-
-          context 'and the specified field is found' do
-            let(:html) {html_page 'form_with_submit'}
-            let(:field) {form.fields.first}
-            let(:submit) {form.submits.first}
-            let(:answer) {html_page 'empty_page'}
-            before :each do
-              allow(form).to receive(:submit) do
-                Mechanize::Page.new URI(subject.url), nil, answer, 200, agent
-              end
-            end
-
-            it 'the field should receive :value= with the parameter' do
-              expect(field).to receive(:value=).with('123').and_call_original
-              subject.pull param
-            end
-
-            it 'looks up the submit button with name = #submit' do
-              expect(form.submits).to receive(:find).and_call_original
-              subject.pull param
-            end
-
-            context 'when button is not found' do
-              let(:html) {html_page 'form_with_field_without_submit'}
-
-              it 'the form is submitted with nil' do
-                expect(form).to receive(:submit).with(nil)
-                subject.pull param
-              end
-            end   # when button is not found
-
-            context 'when button is found' do
-              it 'the form is submitted with the submit' do
-                expect(submit).to be_a_kind_of Mechanize::Form::Submit
-                expect(form).to receive(:submit).with(submit)
-                subject.pull param
-              end
-            end   # when button is found
-
-            describe 'the form is submitted and the answer' do
-              context 'is not a Mechanize::Page' do
-                let(:returned) {Mechanize::File.new}
-                it 'returns a hash {not_a_page: [url, page]}' do
-                  expect(form).to receive(:submit) {returned}
-                  expect(subject.pull param)
-                    .to eq not_a_page: ['my_submit', returned]
-                end
-              end   # is not a Mechanize::Page
-
-              context 'is a Mechanize::Page' do
-                context 'when xpath is not found' do
-                  it 'returns a hash {no_xpath: xpath}' do
-                    expect(subject.pull param).to eq no_xpath: subject.xpath
-                  end
-                end   # when xpath is not found
-
-                context 'when xpath is found' do
-                  let(:answer) {html_page 'answer'}
-                  it 'returns the found content' do
-                    expect(subject.pull param)
-                      .to eq "<div id=\"answer\">\n      <h2>Hoorah</h2>\n    </div>"
-                  end
-                end   # when xpath is found
-              end   # is a Mechanize::Page
-            end   # the form is submitted and the answer
-          end   # and the specified field is found
-        end   # and the specified form is found
-      end   # is a Mechanize::Page
-    end   # when page at url
   end   #pull
 
   describe 'private methods' do
     describe '#agent' do
       it 'returns an instance of Mechanize' do
-        expect(subject.send :agent).to be_a_kind_of Mechanize
+        expect(subject.send :agent).to be_a Watir::Browser
       end
     end   #agent
   end   # private methods

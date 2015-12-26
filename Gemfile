@@ -13,7 +13,8 @@ gem 'inherited_resources'
 
 # models
 gem 'activemodel-associations'
-gem 'mechanize', github: 'sparklemotion/mechanize' # wait for v2.7.4 as 2.7.3 is buggy
+gem 'selenium'
+gem 'watir-webdriver'
 
 # views
 # Use SCSS for stylesheets
