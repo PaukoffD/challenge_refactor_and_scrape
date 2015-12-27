@@ -1,10 +1,10 @@
 # This is a Ruby on Rails Developer Applicants Test
 
-#### It has two parts
+#### It has two parts: _Refactor method_ and _Scrape Info_
 
 ## Refactor method
 
-### Description
+### Task Description
 
 Devices#import needs some love right now. Please refactor it.
 
@@ -244,19 +244,20 @@ But for now, please make an assumption and document it somewhere or just write a
 
 ### Notes
 
-1. Of course, for simplicity the authorization and authentications are omitted. The controller variable `current_user` will return a string as a stub ;-)
-1. For sure db/seeds.rb is needed only for the purpose of this task. I could delete them but I did not.
-1. Most of the specs written for the `DevicesController` should be removed after re-factoring. They are marked with  TODO comment but left in the code.
-1. Some specs for `DevicesController` should be placed outside of the context 'with a minimal set of fields' but since it is not so important I've left them there for simplicity since they are to be removed at the end.
+1. For simplicity the authorization and authentications are omitted obviously. The method `current_user` will return a string as a stub ;-)
+1. For sure db/seeds.rb is needed only for the purpose of this challenge.
+1. Some of the specs written for the `DevicesController` should be removed after re-factoring together with corresponding fixture files not needed elsewhere. They are marked with  TODO comment but left in the code.
+1. Some specs for `DevicesController` should be placed outside of the context 'with a minimal set of fields' but since it is not so important I've left them there since they are to be removed at the end.
 1. As the sample csv file for devices contains different values in the field `username` and exiting code processes all the lines of the csv file, I assume it is the field of the `Device` that refers to some person affiliated to `Customer`.
 1. It is strange that `AccountingType`s are individual for each `Customer`. Should not it be considered to try to use the common dictionary?
 1. It would be not bad to strip `AccountingCategory#name` at the `save` time in order not to do it each time later at import Devices. ;-)
+1. Maybe is is a good idea to allow to add/update the Device for the correct lines of the csv when errors were detected **unless** flag `clear_existing_data` is given?
 
 ### Bugs found
 
-**Please, note that I did not try to fix any bug as it is not required.**
+**Please, note that I did not try to fix all bug found as it is not required.**
 
-I'm not sure, but the following things seems to be buggy. Maybe some of them is _a feature_ ;-)
+I'm not sure about all. Maybe some of them is _a feature_ ;-)
 
 1. One of the following **three** things should take place
   1. `Customer` should have `have_and_belongs_to_many :carrier_bases`
@@ -267,9 +268,21 @@ I'm not sure, but the following things seems to be buggy. Maybe some of them is 
 1. The columns in csv file that are unknown for `Device` are not filtered out and cause an error.
 1. There is no diagnostics when `accounting_categories` for any `AccountingType` has unknown value.
 
+### Milestones for this task (commits)
+
+1. `28c83eb` This is the last commit in the preparation stage.
+1. `7b69409` Base successful specs for DevicesController#import are created
+1. `94d1714` More Rspecs for DevicesController to thorough cover of the functionality.
+1. `d2196d4` I started moving the functionality from the controller to the model `Device.
+1. `48e0513` Functionality is moved.
+1. `5e6ed09` Literal texts are removed from the controller and the skipped specs that
+turned out to be unneeded are removed.
+1. `e0c00ce` More Rspec coverage is added to the controller. Re-factoring is done. Only some delayed tasks are left.
+1. `1bbbdc7` More clean-up and this task is finished.
+
 ## Scrape Info
 
-### Description
+### Task Description
 
 We order mobile phones from dealers. Dealers ship them through Purolator:
 http://www.purolator.com/
@@ -282,5 +295,27 @@ Sometimes dealers use other shipping providers, so please make sure your solutio
 
 ### Notes
 
+1. **Important** For the scraped page to be shown correctly it is needed to
+set the `SIMPLEX_MOBILITY_HOST` environment variable to the correct host name for this
+project. Otherwise the browser will try to load our assets from the wrong place. Namely from the site scraped.
 1. I've implemented possibility to enter only one number at a time while it is
-easy to allow look up several numbers.
+easy to allow look up several numbers in a loop.
+1. At the beginning I used Mechanize gem to obtain the content. But it turned out
+that the html code is changed by javascript heavily after loading, so I have to move to Watir::Browser.
+1. After moving from Mechanize to Watir::Browser the DeliveryCompany specs related to the Mechanize, naturally, stop working.
+I decided not to repeat writing the corresponding specs for Watir::Browser. For sure, it is to be done, and the corresponding task is added to the  TODO list. But for this quest I decided not to do it again.
+
+### TODO:
+
+1. We need the processing of the answer for the case the wrong tracking
+number was given, as it usually is different.
+So, another two fields for corresponding xpath and css must be added to `DeliveryCompany` and used if `xpath` is not found. Maybe the second css can be avoided. I hope.
+1. Additionally the content received can have some links and/or other elements we want to hide. So two sets of xpaths are to be added to `DeliveryCompany` to manage this.
+1. Missing specs for `DeliveryCompany#pull`.
+
+### Milestones for this task (commits)
+
+1. `4a8db21` Started
+1. `29dcb09` Scraping with Mechanize is implemented.
+1. `9354e30` Moved from Mechanize to Watir::Browser
+1. `6ec3822` This task is finished.
