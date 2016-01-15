@@ -317,5 +317,5 @@ So, another two fields for corresponding xpath and css must be added to `Deliver
 
 1. `4a8db21` Started
 1. `29dcb09` Scraping with Mechanize is implemented.
-1. `9354e30` Moved from Mechanize to Watir::Browser
+1. `9354e30` Moved from Mechanize to Watir::Browser. Specs for `DeliveryCompany#pull` removed.
 1. `6ec3822` This task is finished.
